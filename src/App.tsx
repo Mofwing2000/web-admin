@@ -1,58 +1,45 @@
+import './App.scss';
 import React from 'react';
-import logo from './logo.svg';
-import { Counter } from './features/counter/Counter';
-import './App.css';
-
+import { Route, Routes } from 'react-router-dom';
+import Login from './pages/Login';
+import PrivateRoute from './routes/PrivateRoute';
+import AdminRoute from './routes/AdminRoute';
+import MainLayout from './layout/MainLayout';
+import DashBoard from './container/MainContainer/components/DashBoard';
+import UserManagement from './container/MainContainer/components/UserManagement';
+import ProductManagement from './container/MainContainer/components/ProductManagement';
+import Profile from './container/MainContainer/components/Profile';
 function App() {
-  return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <Counter />
-        <p>
-          Edit <code>src/App.tsx</code> and save to reload.
-        </p>
-        <span>
-          <span>Learn </span>
-          <a
-            className="App-link"
-            href="https://reactjs.org/"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            React
-          </a>
-          <span>, </span>
-          <a
-            className="App-link"
-            href="https://redux.js.org/"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            Redux
-          </a>
-          <span>, </span>
-          <a
-            className="App-link"
-            href="https://redux-toolkit.js.org/"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            Redux Toolkit
-          </a>
-          ,<span> and </span>
-          <a
-            className="App-link"
-            href="https://react-redux.js.org/"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            React Redux
-          </a>
-        </span>
-      </header>
-    </div>
-  );
+    return (
+        <Routes>
+            <Route
+                path="/"
+                element={
+                    <PrivateRoute>
+                        <MainLayout />
+                    </PrivateRoute>
+                }
+            >
+                <Route index element={<DashBoard />}></Route>
+                <Route path="dashboard" element={<DashBoard />}></Route>
+                <Route path="profile" element={<Profile />}></Route>
+                <Route path="user-manage" element={<UserManagement />}></Route>
+                <Route
+                    path="product-manage"
+                    element={
+                        <AdminRoute>
+                            <ProductManagement />
+                        </AdminRoute>
+                    }
+                ></Route>
+
+                <Route path="shop2" element={<Login />}></Route>
+                <Route path="shop3" element={<Login />}></Route>
+            </Route>
+            <Route path="login" element={<Login />}></Route>
+            {/* <StaffRoute path="admin" element={<Admin />}></StaffRoute> */}
+        </Routes>
+    );
 }
 
 export default App;

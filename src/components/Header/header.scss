@@ -1,0 +1,64 @@
+@use '../../sass/style.scss' as *;
+.header {
+    color: $gray-color;
+    position: fixed;
+    top: 0;
+    width: 100%;
+    padding: 10px 60px;
+    background-color: #fff;
+    box-shadow: $box-shadow;
+    z-index: 99;
+    &__nav {
+        @include flex(center, space-between);
+        width: 100%;
+        font-size: 24px;
+
+        &__logo {
+            &img {
+                width: 196px;
+            }
+        }
+        &__control {
+            @include flex(center, space-between);
+            gap: 20px;
+            &__language {
+                width: 100px;
+            }
+
+            &--dropdown {
+                &__user {
+                    width: 54px;
+                    height: 54px;
+                    @include flex(center, center);
+                    border-radius: 50%;
+                    background-position: center;
+                    background-repeat: no-repeat;
+                    background-size: cover;
+                    overflow: hidden;
+
+                    &__icon {
+                        width: 100%;
+                        text-align: center;
+                    }
+                }
+                &__menu {
+                    padding: 12px 12px;
+                    li {
+                        @include flex(center, unset);
+                        height: 40px;
+                    }
+                    & > * ~ * {
+                        margin-top: 10px;
+                    }
+                    a {
+                        text-decoration: none;
+                        color: $gray-color;
+                        &:hover {
+                            color: $heading-color;
+                        }
+                    }
+                }
+            }
+        }
+    }
+}

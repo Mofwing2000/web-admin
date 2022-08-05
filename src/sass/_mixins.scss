@@ -1,0 +1,14 @@
+// transition
+@mixin transition($args...) {
+    -webkit-transition: $args;
+    -moz-transition: $args;
+    -ms-transition: $args;
+    -o-transition: $args;
+    transition: $args;
+}
+
+@mixin flex($align-item, $justify-content) {
+    display: flex;
+    justify-content: $justify-content;
+    align-items: $align-item;
+}

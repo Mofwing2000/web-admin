@@ -1,0 +1,15 @@
+import React from 'react';
+import { Navigate, Route, RouteProps } from 'react-router-dom';
+import { useAppSelector } from '../helpers/hooks';
+import { selectAuth } from '../store/rootReducer';
+
+interface IProps {
+    children: JSX.Element;
+}
+
+const PrivateRoute = (props: IProps) => {
+    const { userToken } = useAppSelector<any>(selectAuth);
+    if (userToken !== null) return props.children;
+    else return <Navigate to={'/login'}></Navigate>;
+};
+export default PrivateRoute;

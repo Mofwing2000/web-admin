@@ -1,0 +1,9 @@
+@use '../../sass/style.scss' as *;
+
+.sidebar {
+    position: fixed;
+    top: 74px;
+    left: 0;
+    width: 240px;
+    background-color: $background;
+}
