@@ -1,4 +1,3 @@
-import { url } from 'inspector';
 import React from 'react';
 import { Link } from 'react-router-dom';
 import Logo from '../../assests/image/logo.png';
@@ -49,7 +48,7 @@ const Header = () => {
                             aria-labelledby="dropdownUserIcon"
                         >
                             <li>
-                                <Link to="profile">
+                                <Link to={`profile/${currentUser.id}`}>
                                     <i className="fa-solid fa-user me-3"></i>
                                     Profile
                                 </Link>

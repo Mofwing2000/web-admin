@@ -1,0 +1,9 @@
+@use '../../../../sass/style.scss' as *;
+
+.user-manage-container {
+    &__main-content {
+        &__close {
+            transform: translate(-16px, 10px);
+        }
+    }
+}

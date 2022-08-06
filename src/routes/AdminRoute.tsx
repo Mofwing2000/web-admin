@@ -1,5 +1,5 @@
 import React from 'react';
-import { Navigate, Route, RouteProps } from 'react-router-dom';
+import { Navigate } from 'react-router-dom';
 import { useAppSelector } from '../helpers/hooks';
 import { selectAuth } from '../store/rootReducer';
 

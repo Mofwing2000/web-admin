@@ -6,14 +6,16 @@ import auth, { storage, db } from '../../../../config/firebase.config';
 import cuid from 'cuid';
 import * as yup from 'yup';
 import { UserManageFormValues } from '../../../../models/form';
-import User from '../../../../models/user';
+import { UserDataFirebase, User } from '../../../../models/user';
 import { DEFAULT_USER_PHOTO_URL as defaultPhotoUrl } from '../../../../constants/commons';
 import './user_management.scss';
 import { createUserWithEmailAndPassword } from 'firebase/auth';
-import { doc, setDoc } from 'firebase/firestore';
+import { doc, setDoc, updateDoc } from 'firebase/firestore';
+import { useNavigate } from 'react-router-dom';
+
 interface IProps {
     type: 'add' | 'update';
-    data?: User;
+    data?: UserDataFirebase;
 }
 
 const schema = yup
@@ -47,21 +49,23 @@ const schema = yup
 
 const UserManagePanel = (props: IProps) => {
     const [avatar, setAvatar] = useState<File>();
-    const [loading, setLoading] = useState(false);
-    const [user, setUser] = useState<User>(() => {
-        return props.data
-            ? props.data
-            : {
-                  email: '',
-                  password: '',
-                  firstName: '',
-                  lastName: '',
-                  phoneNumber: '',
-                  photoUrl: '',
-                  address: '',
-                  role: 'customer',
-              };
-    });
+    const [formLoading, setFormLoading] = useState(false);
+    const [imageLoading, setImageLoading] = useState(false);
+    const navigate = useNavigate();
+    const user: User = props.data
+        ? {
+              ...props.data,
+          }
+        : {
+              email: '',
+              password: '',
+              firstName: '',
+              lastName: '',
+              phoneNumber: '',
+              photoUrl: defaultPhotoUrl,
+              address: '',
+              role: 'customer',
+          };
     const {
         register,
         handleSubmit,
@@ -69,80 +73,83 @@ const UserManagePanel = (props: IProps) => {
     } = useForm<UserManageFormValues>({
         resolver: yupResolver(schema),
     });
+    const [userManageFormValues, setUserManageFormValues] = useState<UserManageFormValues>(user);
 
-    let avatarUrl = avatar ? URL.createObjectURL(avatar) : user.photoUrl ? user.photoUrl : defaultPhotoUrl;
-
-    const [userManageFormValues, setUserManageFormValues] = useState<UserManageFormValues>({
-        email: '',
-        firstName: '',
-        lastName: '',
-        password: '',
-        photoUrl: '',
-        phoneNumber: '',
-        address: '',
-        role: 'customer',
-    });
-
-    const handleEmailOnChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const handleEmailChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         setUserManageFormValues({
             ...userManageFormValues,
             email: e.target.value,
         });
     };
 
-    const handlePasswordOnChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const handlePasswordChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         setUserManageFormValues({
             ...userManageFormValues,
             password: e.target.value,
         });
     };
 
-    const handleFirstNameOnChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const handleFirstNameChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         setUserManageFormValues({
             ...userManageFormValues,
             firstName: e.target.value,
         });
     };
 
-    const handleLastNameOnChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const handleLastNameChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         setUserManageFormValues({
             ...userManageFormValues,
             lastName: e.target.value,
         });
     };
 
-    const handlePhoneNumberOnChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const handlePhoneNumberChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         setUserManageFormValues({
             ...userManageFormValues,
             phoneNumber: e.target.value,
         });
     };
 
-    const handleAddressOnChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const handleAddressChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         setUserManageFormValues({
             ...userManageFormValues,
             address: e.target.value,
         });
     };
 
-    const handleRoleOnChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
+    const handleRoleChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
         setUserManageFormValues({
             ...userManageFormValues,
             role: e.target.value === 'customer' ? 'customer' : e.target.value === 'staff' ? 'staff' : 'admin',
         });
     };
 
-    // const handleAvatarChange: React.FormEventHandler<HTMLInputElement> = (e: React.ChangeEvent<HTMLInputElement>) => {
-    //     const file = e.target.files[0];
-    //     file.preview = URL.createObjectURL(file)
-    //     // setAvatar(file);
-    // };
-
-    const setPhotoUrl = (photoUrl: string) => {
-        setUserManageFormValues({
-            ...userManageFormValues,
-            photoUrl,
-        });
+    const uploadAvatar = async () => {
+        if (avatar) {
+            setImageLoading(true);
+            const avatarFileName = cuid() + avatar.name;
+            const storageRef = ref(storage, `userPhotos/${avatarFileName}`);
+            const uploadTask = uploadBytesResumable(storageRef, avatar);
+            uploadTask.on(
+                'state_changed',
+                () => {},
+                (error) => {
+                    setImageLoading(false);
+                    console.log(error);
+                },
+                async () => {
+                    setImageLoading(false);
+                    await getDownloadURL(uploadTask.snapshot.ref).then((downloadURL) => {
+                        setUserManageFormValues((prev) => {
+                            return {
+                                ...prev,
+                                photoUrl: downloadURL,
+                            };
+                        });
+                    });
+                },
+            );
+        }
     };
 
     const addUser = async () => {
@@ -156,77 +163,78 @@ const UserManagePanel = (props: IProps) => {
             await setDoc(doc(db, 'user', result.user.uid), {
                 ...userManageFormValues,
             });
-            setLoading(false);
+            setFormLoading(false);
         } catch (error) {
-            setLoading(false);
+            setFormLoading(false);
             console.log(error);
         }
     };
 
-    const updateuser = () => {};
+    useEffect(() => {
+        setUserManageFormValues({ ...user });
+    }, [props]);
 
-    const onSubmit = async (data: UserManageFormValues) => {
-        setLoading(true);
-        if (avatarUrl !== user.photoUrl && avatarUrl !== defaultPhotoUrl) {
-            if (avatar) {
-                const avatarFileName = cuid() + avatar.name;
-                const storageRef = ref(storage, `userPhotos/${avatarFileName}`);
-                const uploadTask = uploadBytesResumable(storageRef, avatar);
-                uploadTask.on(
-                    'state_changed',
-                    () => {},
-                    (error) => {
-                        setLoading(false);
-                        console.log(error);
-                    },
-                    async () => {
-                        setLoading(false);
-                        await getDownloadURL(uploadTask.snapshot.ref).then((downloadURL) => {
-                            setPhotoUrl(downloadURL);
-                        });
-                    },
-                );
-            }
-        } else {
-            setPhotoUrl(defaultPhotoUrl);
-        }
-        if (props.type === 'add') {
-            await addUser();
+    console.log(user);
 
-            // setUserManageFormValues({
-            //     email: '',
-            //     password: '',
-            //     firstName: '',
-            //     lastName: '',
-            //     phoneNumber: '',
-            //     photoUrl: '',
-            //     address: '',
-            //     role: 'customer',
-            // });
+    const updateUser = async () => {
+        try {
+            await updateDoc(doc(db, 'user', props.data!.id), {
+                ...userManageFormValues,
+            });
+            setFormLoading(false);
+        } catch (error) {
+            setFormLoading(false);
+            console.log(error);
         }
     };
-    console.log(userManageFormValues);
-    // useEffect(() => {
-    //     const uploadFile = () => {
-    //         const fileName = cuid() + avatar?.name;
-    //         console.log(fileName);
-    //     };
 
-    //     if (avatar) uploadFile();
-    // }, [avatar && avatar]);
+    const onSubmit = async () => {
+        setFormLoading(true);
+        if (props.type === 'add') {
+            await addUser();
+            setAvatar(undefined);
+            setUserManageFormValues({
+                email: '',
+                password: '',
+                firstName: '',
+                lastName: '',
+                phoneNumber: '',
+                photoUrl: defaultPhotoUrl,
+                address: '',
+                role: 'customer',
+            });
+        } else if (props.type === 'update') {
+            await updateUser();
+        }
+    };
+
+    useEffect(() => {
+        uploadAvatar();
+    }, [avatar]);
 
     return (
-        <div className="add-user card">
-            <form onSubmit={handleSubmit(onSubmit)} noValidate>
-                <div className="add-user__upload">
+        <div className="manage-user card">
+            <form className="manage-user__form" onSubmit={handleSubmit(onSubmit)} noValidate>
+                <div className="manage-user__form__upload">
                     <div
-                        className="add-user__upload__img"
+                        className="manage-user__form__upload__img overflow-hidden d-flex justify-content-center align-items-center"
                         style={{
-                            backgroundImage: `url(${avatarUrl})`,
+                            backgroundImage: `url(${
+                                userManageFormValues.photoUrl || user.photoUrl || defaultPhotoUrl
+                            })`,
                         }}
-                    ></div>
-                    <div className="add-user__upload__control ">
-                        <div className="add-user__upload__control__btn text-danger form-group">
+                    >
+                        {imageLoading && (
+                            <div
+                                className="manage-user__form__upload__img__loading text-primary spinner-border spinner-border-lg position-absolute "
+                                role="status"
+                            >
+                                <span className="sr-only">Loading...</span>
+                            </div>
+                        )}
+                    </div>
+                    <div className="manage-user__form__upload__control ">
+                        <div className="manage-user__form__upload__control__btn text-danger form-group">
                             <label htmlFor="upload">
                                 <i className="fa-solid fa-upload"></i>
                             </label>
@@ -238,15 +246,18 @@ const UserManagePanel = (props: IProps) => {
                                 aria-describedby="upload"
                             />
                         </div>
-                        <button className="add-user__upload__control__btn text-danger ">
+                        <button className="manage-user__form__upload__control__btn text-danger ">
                             <i className="fa-solid fa-user-pen"></i>
                         </button>
                     </div>
                 </div>
-                <div className="add-user__upload row d-flex">
+                <div className="manage-user__form__upload row d-flex">
                     <div className="form-group col-6">
                         <label htmlFor="email">Email:</label>
                         <input
+                            {...register('email', {
+                                onChange: handleEmailChange,
+                            })}
                             type="email"
                             className="form-control"
                             id="email"
@@ -254,8 +265,6 @@ const UserManagePanel = (props: IProps) => {
                             value={userManageFormValues.email}
                             aria-describedby="email"
                             placeholder="abc@gmail.com"
-                            {...register('email')}
-                            onChange={handleEmailOnChange}
                         />
                         {<p>{errors.email?.message}</p>}
                     </div>
@@ -268,8 +277,9 @@ const UserManagePanel = (props: IProps) => {
                             // defaultValue={user.password}
                             value={userManageFormValues.password}
                             aria-describedby="password"
-                            {...register('password')}
-                            onChange={handlePasswordOnChange}
+                            {...register('password', {
+                                onChange: handlePasswordChange,
+                            })}
                             placeholder="8 characters at least"
                         />
                         <p>{errors.password?.message}</p>
@@ -284,8 +294,9 @@ const UserManagePanel = (props: IProps) => {
                             value={userManageFormValues.firstName}
                             aria-describedby="fist name"
                             placeholder="John"
-                            {...register('firstName')}
-                            onChange={handleFirstNameOnChange}
+                            {...register('firstName', {
+                                onChange: handleFirstNameChange,
+                            })}
                         />
                         {<p>{errors.firstName?.message}</p>}
                     </div>
@@ -299,8 +310,9 @@ const UserManagePanel = (props: IProps) => {
                             value={userManageFormValues.lastName}
                             aria-describedby="last name"
                             placeholder="Wick"
-                            {...register('lastName')}
-                            onChange={handleLastNameOnChange}
+                            {...register('lastName', {
+                                onChange: handleLastNameChange,
+                            })}
                         />
                         {<p>{errors.lastName?.message}</p>}
                     </div>
@@ -314,8 +326,9 @@ const UserManagePanel = (props: IProps) => {
                             value={userManageFormValues.phoneNumber}
                             aria-describedby="phone number"
                             placeholder="0921341215"
-                            {...register('phoneNumber')}
-                            onChange={handlePhoneNumberOnChange}
+                            {...register('phoneNumber', {
+                                onChange: handlePhoneNumberChange,
+                            })}
                         />
                         <p>{errors.phoneNumber?.message}</p>
                     </div>
@@ -329,39 +342,50 @@ const UserManagePanel = (props: IProps) => {
                             value={userManageFormValues.address}
                             aria-describedby="address"
                             placeholder="Hanoi"
-                            {...register('address')}
-                            onChange={handleAddressOnChange}
+                            {...register('address', {
+                                onChange: handleAddressChange,
+                            })}
                         />
                         <p>{errors.address?.message}</p>
                     </div>
                     <div className="form-group col-6">
+                        <label htmlFor="role">Role:</label>
                         <select
+                            id="role"
                             className="form-select col-6"
                             aria-label="role-select"
-                            defaultValue="customer"
-                            {...register('role')}
-                            onChange={handleRoleOnChange}
+                            // defaultValue={user.role || 'customer'}
+                            value={userManageFormValues.role || 'customer'}
+                            {...register('role', {
+                                onChange: handleRoleChange,
+                            })}
                         >
-                            <option selected={userManageFormValues.role === 'customer'} value="customer">
-                                Customer
-                            </option>
-                            <option selected={userManageFormValues.role === 'staff'} value="staff">
-                                Staff
-                            </option>
-                            <option selected={userManageFormValues.role === 'admin'} value="admin">
-                                Admin
-                            </option>
+                            <option value="customer">Customer</option>
+                            <option value="staff">Staff</option>
+                            <option value="admin">Admin</option>
                         </select>
                     </div>
                 </div>
-                <button disabled={loading} className="btn btn-lg btn-success mx-auto d-block mt-5" type="submit">
-                    Confirm
-                    {loading && (
-                        <div className="spinner-border spinner-border-sm" role="status">
-                            <span className="sr-only">Loading...</span>
-                        </div>
+                <div className="manage-user__form__buttons d-flex mt-5 justify-content-center align-items-center gap-3">
+                    <button disabled={imageLoading || formLoading} className="btn btn-lg btn-primary " type="submit">
+                        Confirm
+                        {formLoading && (
+                            <div className="spinner-border spinner-border-sm" role="status">
+                                <span className="sr-only">Loading...</span>
+                            </div>
+                        )}
+                    </button>
+                    {props.type === 'update' && (
+                        <button
+                            disabled={imageLoading || formLoading}
+                            className="btn btn-lg btn-secondary "
+                            type="submit"
+                            onClick={() => navigate(-1)}
+                        >
+                            Close
+                        </button>
                     )}
-                </button>
+                </div>
             </form>
         </div>
     );

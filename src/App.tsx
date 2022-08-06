@@ -22,7 +22,7 @@ function App() {
             >
                 <Route index element={<DashBoard />}></Route>
                 <Route path="dashboard" element={<DashBoard />}></Route>
-                <Route path="profile" element={<Profile />}></Route>
+                <Route path="profile/:userId" element={<Profile />}></Route>
                 <Route path="user-manage" element={<UserManagement />}></Route>
                 <Route
                     path="product-manage"

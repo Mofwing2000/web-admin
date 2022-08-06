@@ -12,7 +12,7 @@ async function loginFirebase(email: string, password: string) {
         const docRef = doc(db, 'user', userCredential.user.uid);
         const docSnap = await getDoc(docRef);
         return {
-            user: docSnap.data(),
+            user: { ...docSnap.data(), id: userCredential.user.uid },
             token: userToken,
         };
     });
