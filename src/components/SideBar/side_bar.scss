@@ -5,5 +5,24 @@
     top: 74px;
     left: 0;
     width: 240px;
-    background-color: $background;
+    height: calc(100vh - $header-height);
+    background-color: $background-2;
+
+    &__comp ~ &__comp {
+        border-top: solid 1px $gray-color;
+    }
+    &__comp {
+        margin-bottom: 12px;
+        &__title {
+            text-align: center;
+        }
+        &__nav {
+            margin-top: 14px;
+
+            &__item {
+                // display: block;
+                padding: 8px 4px;
+            }
+        }
+    }
 }

@@ -1,0 +1,14 @@
+{
+    "user": "Người dùng",
+    "name": "Tên",
+    "firstName": "Tên",
+    "lastName": "Họ",
+    "phoneNumber": "SĐT",
+    "address": "Địa chỉ",
+    "role": "Vai trò",
+    "addUser": "Thêm người dùng",
+    "admin": "Admin",
+    "staff": "Nhân viên",
+    "customer": "Khách hàng",
+    "password": "Mật khấu"
+}

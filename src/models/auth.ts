@@ -6,8 +6,3 @@ export default interface AuthState {
     currentUser: User | null;
     userToken: string | null;
 }
-
-export interface LoginInput {
-    email: string;
-    password: string;
-}

@@ -1,0 +1,61 @@
+@use '../../../../sass/style.scss' as *;
+.collection {
+    &__banner {
+        height: 800px;
+        width: 100%;
+        background-size: cover;
+        background-position: center;
+        background-repeat: no-repeat;
+
+        &__upload {
+            opacity: 0;
+            visibility: hidden;
+            background-color: rgba($color: #000000, $alpha: 0.2);
+            transition: all 0.3s 0s ease;
+        }
+        &:hover &__upload {
+            opacity: 1;
+            visibility: visible;
+        }
+    }
+    &__input {
+        &__textarea {
+            height: 150px;
+        }
+    }
+    &__products {
+        &__search {
+            margin-bottom: 50px;
+
+            // &:hover &__list {
+            //     display: flex;
+            // }
+
+            &__list {
+                display: none;
+                background-color: $background-2;
+                width: 100%;
+                top: 100%;
+                left: 0;
+                &__item {
+                    &__image {
+                        @include square-div-with-background();
+                    }
+                    &:hover {
+                        background-color: $background;
+                    }
+                }
+            }
+        }
+        &__table {
+            &__img-container {
+                &__content {
+                    @include square-div-with-background();
+                }
+            }
+        }
+    }
+    &__buttons {
+        margin-top: 200px;
+    }
+}

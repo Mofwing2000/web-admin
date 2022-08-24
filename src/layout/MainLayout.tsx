@@ -1,11 +1,11 @@
 import React from 'react';
 import { Outlet } from 'react-router-dom';
-import Header from '../components/Header';
-import Footer from '../components/Footer/Footer';
+import Header from '../components/header/Header';
+import Footer from '../components/footer/Footer';
 import { useAppSelector } from '../helpers/hooks';
-import { selectAuth } from '../store/rootReducer';
-import SideBar from '../components/SideBar';
-import './main_layout.scss';
+import { selectAuth } from '../store/root-reducer';
+import SideBar from '../components/sidebar/SideBar';
+import './main-layout.scss';
 const MainLayout = () => {
     const { currentUser } = useAppSelector<any>(selectAuth);
 

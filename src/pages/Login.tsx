@@ -4,7 +4,7 @@ import { useForm } from 'react-hook-form';
 import { Link } from 'react-router-dom';
 import * as yup from 'yup';
 import { useAppDispatch } from '../helpers/hooks';
-import { LoginInput } from '../models/auth';
+import { LoginInput } from '../models/form';
 import { loginAsync } from '../store/auth/auth.action';
 
 const schema = yup

@@ -1,0 +1,21 @@
+@use '../../../../sass/style.scss' as *;
+
+.user-manage {
+    &__add {
+        &__close {
+            transform: translate(-16px, 10px);
+        }
+    }
+    &__table {
+        &__body {
+            &__row {
+                &__data {
+                    &__img {
+                        @include square-div-with-background();
+                        height: 60px;
+                    }
+                }
+            }
+        }
+    }
+}

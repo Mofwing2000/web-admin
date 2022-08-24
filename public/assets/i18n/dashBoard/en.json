@@ -1,0 +1,13 @@
+{
+    "totalUser": "Total user",
+    "totalProduct": "Total product",
+    "totalOrder": "Total order",
+    "totalIncome": "Total income",
+    "viewUsersList": "View users list",
+    "viewProductsList": "View products list",
+    "viewOrdersList": "View orders list",
+    "totalOrderThisMonth": "Total order this month",
+    "lastMonth": "Last month",
+    "latestOrders": "Latest orders",
+    "thisMonthStatistic": "This month statistic"
+}

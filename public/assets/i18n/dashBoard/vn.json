@@ -1,0 +1,13 @@
+{
+    "totalUser": "Tổng người dùng",
+    "totalProduct": "Tổng sản phẩm",
+    "totalOrder": "Tổng đơn hàng",
+    "totalIncome": "Tổng doanh thu",
+    "viewUsersList": "Xem tất cả người dùng",
+    "viewProductsList": "Xem tất cả sản phẩm",
+    "viewOrdersList": "Xem tất cả đơn hàng",
+    "totalOrderThisMonth": "Tổng đơn trong tháng",
+    "lastMonth": "Tháng trước",
+    "latestOrders": "Đơn hàng mới nhất",
+    "thisMonthStatistic": "Thống kê tháng hiện tại"
+}

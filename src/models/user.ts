@@ -1,7 +1,7 @@
 import { DocumentData } from 'firebase/firestore';
-import { UserRole } from '../type/UserType';
+import { UserRole } from '../type/user-type';
 
-export interface UserDataFirebase {
+export interface User {
     id: string;
     email: string;
     password: string;
@@ -11,7 +11,8 @@ export interface UserDataFirebase {
     photoUrl: string;
     address: string;
     role: UserRole;
+    createdAt: Date;
 }
 
 // export default type User = Omit<UserDataFirebase,'id'>
-export type User = Omit<UserDataFirebase, 'id'>;
+// export type User = Omit<UserDataFirebase, 'id'>;

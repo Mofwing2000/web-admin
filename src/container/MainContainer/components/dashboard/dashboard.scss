@@ -1,0 +1,35 @@
+@use '../../../../sass/style.scss' as *;
+.dashboard {
+    &__cards {
+        &__item {
+            // width: 22%;
+            // width: 24%;
+            // margin: 20px;
+            padding: 10px 20px;
+            border-radius: 10px;
+            box-shadow: $box-shadow;
+            &__user.card {
+                background-color: #00aeef;
+            }
+            &__product.card {
+                background-color: #3bd949;
+            }
+            &__order.card {
+                background-color: #0d6efd;
+            }
+            &__income.card {
+                background-color: #ffc107;
+            }
+            &__title {
+            }
+
+            &__count {
+                &__percent {
+                    font-size: 12px;
+                    top: 20%;
+                    left: calc(50% + 20px);
+                }
+            }
+        }
+    }
+}

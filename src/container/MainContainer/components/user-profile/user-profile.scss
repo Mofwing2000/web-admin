@@ -1,0 +1,23 @@
+@use '../../../../sass/style.scss' as *;
+
+.user-profile {
+    &__info {
+        font-size: 20px;
+        &__avatar {
+            &__item {
+                @include square-div-with-background();
+            }
+        }
+        &__detail {
+            .info-label {
+                font-weight: 700;
+            }
+        }
+    }
+    &__navigate {
+        button {
+            font-size: 20px;
+            width: 160px;
+        }
+    }
+}

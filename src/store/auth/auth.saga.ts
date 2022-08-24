@@ -20,7 +20,6 @@ async function loginFirebase(email: string, password: string) {
 
 function* login(action: ReturnType<typeof loginAsync.request>) {
     // const navigate = useNavigate();
-    console.log('login');
     try {
         const { email, password } = action.payload;
         const { user, token } = yield call(loginFirebase, email, password);

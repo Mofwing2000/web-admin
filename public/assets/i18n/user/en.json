@@ -1,0 +1,14 @@
+{
+    "user": "User",
+    "name": "Name",
+    "firstName": "First name",
+    "lastName": "Last name",
+    "phoneNumber": "Phone number",
+    "address": "Address",
+    "role": "Role",
+    "addUser": "Add user",
+    "admin": "Admin",
+    "staff": "Staff",
+    "customer": "Customer",
+    "password": "Password"
+}

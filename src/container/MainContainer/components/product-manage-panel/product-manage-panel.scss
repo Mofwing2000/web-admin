@@ -1,0 +1,61 @@
+@use '../../../../sass/style.scss' as *;
+.manage-product {
+    padding: 40px 20px;
+    box-shadow: $box-shadow;
+    &__form {
+        &__upload {
+            &__gallery {
+                &__main {
+                    @include square-div-with-background;
+                    box-shadow: $box-shadow;
+                }
+                &__grid {
+                    box-shadow: $box-shadow;
+                    &__item {
+                        @include square-div-with-background;
+                        &:hover > &__close {
+                            display: block;
+                        }
+                        &__close {
+                            display: none;
+                            transform: translate(-6px, 4px);
+                        }
+                    }
+                }
+            }
+
+            &__control {
+                @include flex(center, center);
+                width: 160px;
+                gap: 10px;
+                &__btn {
+                    width: 40px;
+                    height: 40px;
+                    @include flex(center, center);
+                    border-radius: 9999px;
+                }
+                i {
+                    font-size: 24px;
+                }
+                > button {
+                    border: none;
+                    background-color: unset;
+                }
+            }
+        }
+
+        &__buttons {
+            button {
+                width: 160px;
+            }
+        }
+
+        &__info {
+            &__input {
+                > textarea {
+                    height: 500px;
+                }
+            }
+        }
+    }
+}

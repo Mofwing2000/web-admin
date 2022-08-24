@@ -1,0 +1,13 @@
+@use '../../sass/style.scss' as *;
+.pagination {
+    @include flex(center, center);
+    .btn {
+        height: 40px;
+    }
+    &__page-number {
+        height: 40px;
+        display: inline-block;
+        margin: 0px 20px;
+        font-size: 26px;
+    }
+}

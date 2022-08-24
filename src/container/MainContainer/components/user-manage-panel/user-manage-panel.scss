@@ -1,0 +1,43 @@
+@use '../../../../sass/style.scss' as *;
+.manage-user {
+    padding: 40px 20px;
+    box-shadow: $box-shadow;
+    &__form {
+        &__upload {
+            &__img {
+                width: 160px;
+                height: 160px;
+                border-radius: 50%;
+                background-position: center;
+                background-repeat: no-repeat;
+                background-size: cover;
+            }
+
+            &__control {
+                @include flex(center, center);
+                width: 160px;
+                gap: 10px;
+                &__btn {
+                    width: 40px;
+                    height: 40px;
+                    @include flex(center, center);
+                    border-radius: 9999px;
+                }
+                i {
+                    font-size: 18px;
+                }
+                > button {
+                    border: none;
+                    background-color: unset;
+                }
+            }
+        }
+
+        &__buttons {
+            button {
+                font-size: 20px;
+                width: 160px;
+            }
+        }
+    }
+}

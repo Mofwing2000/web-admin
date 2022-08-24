@@ -1,6 +1,6 @@
 import { createReducer } from 'typesafe-actions';
 import AuthState from '../../models/auth';
-import { AuthActionsType } from './auth.action';
+import { AuthActionsType } from '../../type/auth';
 
 const initialState: AuthState = {
     isLogged: false,

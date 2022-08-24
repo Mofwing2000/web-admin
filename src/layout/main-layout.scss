@@ -1,0 +1,9 @@
+@use '../sass/style.scss' as *;
+main {
+    position: relative;
+    padding-top: $header-height;
+    .main-content {
+        margin-left: 240px;
+        padding: 40px 40px;
+    }
+}

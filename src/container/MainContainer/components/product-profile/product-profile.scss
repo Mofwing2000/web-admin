@@ -1,0 +1,91 @@
+@use '../../../../sass/style.scss' as *;
+
+.product-profile {
+    &__main {
+        &__gallery {
+            &__slider {
+                .swiper-slide {
+                    opacity: 0.6;
+                }
+                .swiper-slide-thumb-active {
+                    opacity: 1;
+                    border: 1px solid rgb(79, 79, 79);
+                }
+                &__item {
+                    width: 100%;
+                    &__container {
+                        @include square-div-with-background();
+                    }
+                }
+            }
+        }
+
+        &__info {
+            &__title {
+                font-weight: 800;
+                margin-bottom: 24px;
+            }
+            &__price {
+                margin-bottom: 16px;
+                font-size: 30px;
+            }
+            &__quantity {
+                margin-bottom: 16px;
+                &__label {
+                    font-weight: 700;
+                }
+            }
+            &__color {
+                margin-bottom: 16px;
+                &__item {
+                    // width: 20px;
+                    // height: 20px;
+                    display: inline-flex;
+                    justify-content: center;
+                    align-items: center;
+                    padding: 1px;
+                    border: 1px solid rgba($color: $gray-color, $alpha: 0.3);
+                    border-radius: 50%;
+                }
+            }
+            &__size {
+                &__item {
+                    width: 44px;
+                    height: 30px;
+                    display: inline-flex;
+                    justify-content: center;
+                    align-items: center;
+                    // padding: 2px 4px;
+                    border: 1px solid rgba($color: $gray-color, $alpha: 0.1);
+                    border-radius: 2px;
+
+                    &.out-stock {
+                        opacity: 0.2;
+                    }
+                }
+            }
+            &__description {
+                &__label {
+                    font-weight: 700;
+                }
+                pre {
+                    margin-top: 40px;
+                    font-size: 16px;
+                    font-family: inherit;
+                    overflow-x: auto;
+                    white-space: pre-wrap;
+                    white-space: -moz-pre-wrap;
+                    white-space: -pre-wrap;
+                    white-space: -o-pre-wrap;
+                    word-wrap: break-word;
+                }
+            }
+        }
+    }
+    &__navigate {
+        button {
+            font-size: 20px;
+            width: 160px;
+        }
+    }
+}

@@ -1,7 +1,7 @@
 import React from 'react';
 import { Navigate } from 'react-router-dom';
 import { useAppSelector } from '../helpers/hooks';
-import { selectAuth } from '../store/rootReducer';
+import { selectAuth } from '../store/root-reducer';
 
 interface IProps {
     children: JSX.Element;
