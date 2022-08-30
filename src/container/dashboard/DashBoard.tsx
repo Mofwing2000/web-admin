@@ -3,14 +3,14 @@ import { collection, onSnapshot, query, Timestamp } from 'firebase/firestore';
 import React, { useEffect, useState, useMemo } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { toast } from 'react-toastify';
-import { db } from '../../../../config/firebase.config';
-import { Order, OrderState } from '../../../../models/order';
+import { db } from '../../config/firebase.config';
+import { Order, OrderState } from '../../models/order';
 import './dashboard.scss';
 import ReactTooltip from 'react-tooltip';
 import moment from 'moment';
-import LoadingModal from '../../../../components/loading-modal/LoadingModal';
+import LoadingModal from '../../components/loading-modal/LoadingModal';
 import { useTranslation } from 'react-i18next';
-import OrderTable from '../../../../components/order-table/OrderTable';
+import OrderTable from '../../components/order-table/OrderTable';
 const DashBoard = () => {
     const [isLoading, setIsLoading] = useState<boolean>(false);
     const [totalUser, setTotalUser] = useState<number>(0);

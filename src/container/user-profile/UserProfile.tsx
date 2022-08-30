@@ -4,9 +4,9 @@ import React, { useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useNavigate, useParams } from 'react-router-dom';
 import { toast } from 'react-toastify';
-import LoadingModal from '../../../../components/loading-modal/LoadingModal';
-import { db } from '../../../../config/firebase.config';
-import { User } from '../../../../models/user';
+import LoadingModal from '../../components/loading-modal/LoadingModal';
+import { db } from '../../config/firebase.config';
+import { User } from '../../models/user';
 import './user-profile.scss';
 const UserProfile = () => {
     const { t } = useTranslation(['common', 'user']);

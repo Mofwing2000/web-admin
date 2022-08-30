@@ -1,11 +1,11 @@
 import React, { useEffect, useState } from 'react';
-import { User } from '../../../../models/user';
+import { User } from '../../models/user';
 import { useLocation, useParams } from 'react-router-dom';
 import ProductManagePanel from '../product-manage-panel/ProductManagePanel';
 import { getDoc, doc } from 'firebase/firestore';
-import { db } from '../../../../config/firebase.config';
-import { Bottom, Top } from '../../../../models/product';
-import LoadingModal from '../../../../components/loading-modal/LoadingModal';
+import { db } from '../../config/firebase.config';
+import { Bottom, Top } from '../../models/product';
+import LoadingModal from '../../components/loading-modal/LoadingModal';
 
 const ProductEdit = () => {
     const { productId } = useParams();

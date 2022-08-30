@@ -4,10 +4,10 @@ import React, { useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useNavigate, useParams } from 'react-router-dom';
 import { toast } from 'react-toastify';
-import LoadingModal from '../../../../components/loading-modal/LoadingModal';
-import { db } from '../../../../config/firebase.config';
-import { Collection } from '../../../../models/collection';
-import { DEFAULT_COLLECTION_PHOTO_URL as defaultCollectionBanner } from '../../../../constants/commons';
+import LoadingModal from '../../components/loading-modal/LoadingModal';
+import { db } from '../../config/firebase.config';
+import { Collection } from '../../models/collection';
+import { DEFAULT_COLLECTION_PHOTO_URL as defaultCollectionBanner } from '../../constants/commons';
 const CollectionView = () => {
     const { collectionId } = useParams();
     const { t } = useTranslation(['common', 'product']);

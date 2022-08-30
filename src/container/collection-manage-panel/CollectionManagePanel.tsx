@@ -1,22 +1,22 @@
 import { collection, doc, onSnapshot, query, setDoc, updateDoc } from 'firebase/firestore';
 import React, { FC, useEffect, useMemo, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { db, storage } from '../../../../config/firebase.config';
-import { Top, Bottom } from '../../../../models/product';
+import { db, storage } from '../../config/firebase.config';
+import { Top, Bottom } from '../../models/product';
 import ReactTooltip from 'react-tooltip';
 import { useNavigate } from 'react-router-dom';
 import './collection-manage-panel.scss';
 import cuid from 'cuid';
-import { DEFAULT_COLLECTION_PHOTO_URL as defaultCollectionBanner } from '../../../../constants/commons';
+import { DEFAULT_COLLECTION_PHOTO_URL as defaultCollectionBanner } from '../../constants/commons';
 import { getDownloadURL, ref, uploadBytesResumable } from 'firebase/storage';
 import { FirebaseError } from '@firebase/util';
 import { toast } from 'react-toastify';
-import { Collection } from '../../../../models/collection';
-import { CollectionAction } from '../../../../type/collection-manage';
+import { Collection } from '../../models/collection';
+import { CollectionAction } from '../../type/collection-manage';
 import * as yup from 'yup';
 import { useForm } from 'react-hook-form';
 import { yupResolver } from '@hookform/resolvers/yup';
-import LoadingModal from '../../../../components/loading-modal/LoadingModal';
+import LoadingModal from '../../components/loading-modal/LoadingModal';
 interface IProps {
     action: CollectionAction;
     data?: Collection;

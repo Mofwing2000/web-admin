@@ -14,16 +14,16 @@ import {
     startAfter,
 } from 'firebase/firestore';
 import { useNavigate } from 'react-router-dom';
-import Pagination from '../../../../components/pagination/Pagination';
-import { db } from '../../../../config/firebase.config';
-import { User } from '../../../../models/user';
-import { PageLimit, PageOrder, PageUserSort } from '../../../../type/page-type';
+import Pagination from '../../components/pagination/Pagination';
+import { db } from '../../config/firebase.config';
+import { User } from '../../models/user';
+import { PageLimit, PageOrder, PageUserSort } from '../../type/page-type';
 import UserManagePanel from '../user-manage-panel/UserManagePanel';
 import './user-manage.scss';
 import { FirebaseError } from '@firebase/util';
 import { toast } from 'react-toastify';
 import ReactTooltip from 'react-tooltip';
-import LoadingModal from '../../../../components/loading-modal/LoadingModal';
+import LoadingModal from '../../components/loading-modal/LoadingModal';
 import { useTranslation } from 'react-i18next';
 
 const UserManage = () => {

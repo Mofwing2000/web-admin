@@ -1,9 +1,9 @@
 import React, { useEffect, useState } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 import { getDoc, doc } from 'firebase/firestore';
-import { db } from '../../../../config/firebase.config';
-import { Bottom, Top } from '../../../../models/product';
-import LoadingModal from '../../../../components/loading-modal/LoadingModal';
+import { db } from '../../config/firebase.config';
+import { Bottom, Top } from '../../models/product';
+import LoadingModal from '../../components/loading-modal/LoadingModal';
 import { FreeMode, Navigation, Thumbs } from 'swiper';
 import { Swiper, SwiperSlide } from 'swiper/react';
 import SwiperCore, { Autoplay } from 'swiper';

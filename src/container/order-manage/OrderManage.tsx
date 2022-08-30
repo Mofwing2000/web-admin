@@ -14,12 +14,12 @@ import {
 import React, { useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { toast } from 'react-toastify';
-import LoadingModal from '../../../../components/loading-modal/LoadingModal';
-import OrderTable from '../../../../components/order-table/OrderTable';
-import Pagination from '../../../../components/pagination/Pagination';
-import { db } from '../../../../config/firebase.config';
-import { Order } from '../../../../models/order';
-import { PageLimit, PageOrder, PageOrderSort } from '../../../../type/page-type';
+import LoadingModal from '../../components/loading-modal/LoadingModal';
+import OrderTable from '../../components/order-table/OrderTable';
+import Pagination from '../../components/pagination/Pagination';
+import { db } from '../../config/firebase.config';
+import { Order } from '../../models/order';
+import { PageLimit, PageOrder, PageOrderSort } from '../../type/page-type';
 
 const OrderManage = () => {
     const [ordersData, setOrdersData] = useState<Order[]>();

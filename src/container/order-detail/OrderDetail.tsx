@@ -3,11 +3,11 @@ import { getDoc, doc, updateDoc, onSnapshot, Timestamp } from 'firebase/firestor
 import React, { useEffect, useRef, useState } from 'react';
 import { useParams } from 'react-router-dom';
 import { toast } from 'react-toastify';
-import LoadingModal from '../../../../components/loading-modal/LoadingModal';
-import { db } from '../../../../config/firebase.config';
-import { Order, OrderState } from '../../../../models/order';
-import { Bottom, Top } from '../../../../models/product';
-import { User } from '../../../../models/user';
+import LoadingModal from '../../components/loading-modal/LoadingModal';
+import { db } from '../../config/firebase.config';
+import { Order, OrderState } from '../../models/order';
+import { Bottom, Top } from '../../models/product';
+import { User } from '../../models/user';
 import * as yup from 'yup';
 import './order-detail.scss';
 import { useForm } from 'react-hook-form';

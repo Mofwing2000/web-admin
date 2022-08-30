@@ -2,27 +2,18 @@ import { yupResolver } from '@hookform/resolvers/yup';
 import React, { FC, useEffect, useMemo, useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { ref, uploadBytesResumable, getDownloadURL } from 'firebase/storage';
-import auth, { storage, db } from '../../../../config/firebase.config';
+import auth, { storage, db } from '../../config/firebase.config';
 import cuid from 'cuid';
 import * as yup from 'yup';
-import {
-    ProductType,
-    Top,
-    Bottom,
-    Color,
-    TopCategory,
-    BottomCategory,
-    Size,
-    Product,
-} from '../../../../models/product';
-import { DEFAULT_PRODUCT_PHOTO_URL as defaultPhotoUrl } from '../../../../constants/commons';
+import { ProductType, Top, Bottom, Color, TopCategory, BottomCategory, Size, Product } from '../../models/product';
+import { DEFAULT_PRODUCT_PHOTO_URL as defaultPhotoUrl } from '../../constants/commons';
 import './product-manage-panel.scss';
 import { doc, setDoc, updateDoc } from 'firebase/firestore';
 import { useNavigate } from 'react-router-dom';
-import { ProductAction } from '../../../../type/product-manage';
+import { ProductAction } from '../../type/product-manage';
 import { toast } from 'react-toastify';
 import { FirebaseError } from '@firebase/util';
-import LoadingModal from '../../../../components/loading-modal/LoadingModal';
+import LoadingModal from '../../components/loading-modal/LoadingModal';
 import { useTranslation } from 'react-i18next';
 
 interface IProps {

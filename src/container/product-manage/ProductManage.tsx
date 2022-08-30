@@ -18,12 +18,12 @@ import { useTranslation } from 'react-i18next';
 import { useNavigate } from 'react-router-dom';
 import { toast } from 'react-toastify';
 import ReactTooltip from 'react-tooltip';
-import LoadingModal from '../../../../components/loading-modal/LoadingModal';
-import Pagination from '../../../../components/pagination/Pagination';
-import { db } from '../../../../config/firebase.config';
-import { Bottom, ProductType, Top } from '../../../../models/product';
-import { PageLimit, PageOrder, PageProductSort } from '../../../../type/page-type';
-import { ProductAction } from '../../../../type/product-manage';
+import LoadingModal from '../../components/loading-modal/LoadingModal';
+import Pagination from '../../components/pagination/Pagination';
+import { db } from '../../config/firebase.config';
+import { Bottom, ProductType, Top } from '../../models/product';
+import { PageLimit, PageOrder, PageProductSort } from '../../type/page-type';
+import { ProductAction } from '../../type/product-manage';
 import ProductManagePanel from '../product-manage-panel/ProductManagePanel';
 import './product-management.scss';
 

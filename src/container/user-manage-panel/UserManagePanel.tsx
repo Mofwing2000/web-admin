@@ -10,10 +10,10 @@ import { useTranslation } from 'react-i18next';
 import { useNavigate } from 'react-router-dom';
 import { toast } from 'react-toastify';
 import * as yup from 'yup';
-import LoadingModal from '../../../../components/loading-modal/LoadingModal';
-import auth, { db, storage } from '../../../../config/firebase.config';
-import { DEFAULT_USER_PHOTO_URL as defaultPhotoUrl } from '../../../../constants/commons';
-import { User } from '../../../../models/user';
+import LoadingModal from '../../components/loading-modal/LoadingModal';
+import auth, { db, storage } from '../../config/firebase.config';
+import { DEFAULT_USER_PHOTO_URL as defaultPhotoUrl } from '../../constants/commons';
+import { User } from '../../models/user';
 import './user-manage-panel.scss';
 interface IProps {
     type: 'add' | 'update';
