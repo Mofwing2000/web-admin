@@ -8,3 +8,9 @@ export interface Collection {
     productsList: string[];
     createdAt: Date;
 }
+
+export interface CollectionState {
+    isCollectionLoading: boolean;
+    collections: Array<Collection>;
+    error: string;
+}
