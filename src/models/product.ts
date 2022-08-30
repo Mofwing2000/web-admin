@@ -85,4 +85,10 @@ export enum BottomCategory {
     'JEANS' = 'jeans',
 }
 
+export interface ProductState {
+    isProductLoading: boolean;
+    products: Array<Top | Bottom>;
+    error: string;
+}
+
 export type Size = 'XS' | 'S' | 'M' | 'L' | 'XL' | '2XL' | '3XL' | '4XL' | '5XL';
