@@ -14,5 +14,14 @@ export interface User {
     createdAt: Date;
 }
 
-// export default type User = Omit<UserDataFirebase,'id'>
-// export type User = Omit<UserDataFirebase, 'id'>;
+export interface UserState {
+    user: User | null;
+    isUserLoading: boolean;
+    error: string;
+}
+
+export interface UsersState {
+    users: User[] | null;
+    isUserLoading: boolean;
+    error: string;
+}
