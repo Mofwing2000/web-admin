@@ -1,0 +1,6 @@
+export enum OrderActionType {
+    FETCH_ORDERS_START = 'product/FETCH_ORDERS_START',
+    FETCH_ORDERS_SUCCEED = 'product/FETCH_ORDERS_SUCCEED',
+    FETCH_ORDERS_FAILED = 'product/FETCH_ORDERS_FAILED',
+    CLEAR_ORDERS = 'product/CLEAR_ORDERS',
+}
