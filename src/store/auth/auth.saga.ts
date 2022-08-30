@@ -1,10 +1,15 @@
 import { FirebaseError } from '@firebase/util';
 import { call, put, takeEvery } from '@redux-saga/core/effects';
-import { signInWithEmailAndPassword } from 'firebase/auth';
-import { doc, getDoc } from 'firebase/firestore';
+import { createUserWithEmailAndPassword, signInWithEmailAndPassword } from 'firebase/auth';
+import { doc, getDoc, setDoc } from 'firebase/firestore';
+import { toast } from 'react-toastify';
 import { push } from 'redux-first-history';
 import auth, { db } from '../../config/firebase.config';
-import { loginAsync, logout } from './auth.action';
+import { loginAsync } from './auth.action';
+import { DEFAULT_USER_PHOTO_URL as defaultAvatar } from '../../constants/commons';
+import { User } from '../../models/user';
+
+import { fetchUserAsync } from '../user/user.action';
 
 async function loginFirebase(email: string, password: string) {
     return signInWithEmailAndPassword(auth, email, password).then(async (userCredential) => {
@@ -12,23 +17,30 @@ async function loginFirebase(email: string, password: string) {
         const docRef = doc(db, 'user', userCredential.user.uid);
         const docSnap = await getDoc(docRef);
         return {
-            user: { ...docSnap.data(), id: userCredential.user.uid },
+            user: { ...docSnap.data() } as User,
             token: userToken,
         };
     });
 }
 
 function* login(action: ReturnType<typeof loginAsync.request>) {
-    // const navigate = useNavigate();
     try {
         const { email, password } = action.payload;
-        const { user, token } = yield call(loginFirebase, email, password);
-        console.log(user);
-        yield put(loginAsync.success({ user, token }));
-        if (user.role !== 'admin' && user.role !== 'staff') yield put(logout());
-        else yield put(push('/'));
+        const {
+            user,
+            token,
+        }: {
+            user: User;
+            token: string;
+        } = yield call(loginFirebase, email, password);
+        yield put(loginAsync.success({ token }));
+        yield put(fetchUserAsync.success(user));
+        yield put(push('/'));
     } catch (error) {
-        if (error instanceof FirebaseError) yield put(loginAsync.failure(error.message));
+        if (error instanceof FirebaseError) {
+            toast.error(error.message);
+            yield put(loginAsync.failure(error.message));
+        }
     }
 }
 
