@@ -10,6 +10,7 @@ import {
     getDocs,
     Query,
     query,
+    setDoc,
     updateDoc,
     writeBatch,
 } from 'firebase/firestore';
@@ -22,13 +23,11 @@ import { selectUsers } from './users.reducer';
 
 async function fetchUsers(docQuery: Query<DocumentData>) {
     const docSnap = await getDocs(docQuery);
-    if (!docSnap.empty) {
-        const list: User[] = [];
-        docSnap.forEach((item) => {
-            list.push(item.data() as User);
-        });
-        return list;
-    } else return null;
+    const list: User[] = [];
+    docSnap.forEach((item) => {
+        list.push(item.data() as User);
+    });
+    return list;
 }
 
 function* fetchUsersGen(action: ReturnType<typeof fetchUsersAsync.request>) {
@@ -97,7 +96,7 @@ function* deleteUsersGen(action: ReturnType<typeof deleteUsersAsync.request>) {
 }
 
 async function addUsers(user: User) {
-    await addDoc(collection(db, 'user'), {
+    await setDoc(doc(db, 'user', user.id), {
         ...user,
     });
     const docSnap = await getDocs(collection(db, 'user'));

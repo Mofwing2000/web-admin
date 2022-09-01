@@ -8,6 +8,7 @@ import {
     getDocs,
     Query,
     query,
+    setDoc,
     updateDoc,
     writeBatch,
 } from 'firebase/firestore';
@@ -44,7 +45,7 @@ function* fetchColllectionsGen(action: ReturnType<typeof fetchColllectionsAsync.
 }
 
 async function addColllection(collectionData: Collection) {
-    await addDoc(collection(db, 'collection'), {
+    await setDoc(doc(db, 'collection', collectionData.id), {
         ...collectionData,
     });
     const list: Collection[] = [];
