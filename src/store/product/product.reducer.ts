@@ -30,6 +30,57 @@ const productReducer: Reducer<ProductState, AnyAction> = createReducer(initState
         isProductLoading: false,
         error: action.payload,
     }))
+    .handleAction(ProductActionType.ADD_PRODUCT_START, (state: ProductState) => ({
+        ...state,
+        isProductLoading: true,
+    }))
+    .handleAction(
+        ProductActionType.ADD_PRODUCT_SUCCEED,
+        (state: ProductState, action: PayloadAction<(Top | Bottom)[]>) => ({
+            ...state,
+            isProductLoading: false,
+            products: action.payload,
+        }),
+    )
+    .handleAction(ProductActionType.ADD_PRODUCT_FAILED, (state: ProductState, action: PayloadAction<string>) => ({
+        ...state,
+        isProductLoading: false,
+        error: action.payload,
+    }))
+    .handleAction(ProductActionType.UPDATE_PRODUCT_START, (state: ProductState) => ({
+        ...state,
+        isProductLoading: true,
+    }))
+    .handleAction(
+        ProductActionType.UPDATE_PRODUCT_SUCCEED,
+        (state: ProductState, action: PayloadAction<(Top | Bottom)[]>) => ({
+            ...state,
+            isProductLoading: false,
+            products: action.payload,
+        }),
+    )
+    .handleAction(ProductActionType.UPDATE_PRODUCT_FAILED, (state: ProductState, action: PayloadAction<string>) => ({
+        ...state,
+        isProductLoading: false,
+        error: action.payload,
+    }))
+    .handleAction(ProductActionType.DELETE_PRODUCT_START, (state: ProductState) => ({
+        ...state,
+        isProductLoading: true,
+    }))
+    .handleAction(
+        ProductActionType.DELETE_PRODUCT_SUCCEED,
+        (state: ProductState, action: PayloadAction<(Top | Bottom)[]>) => ({
+            ...state,
+            isProductLoading: false,
+            products: action.payload,
+        }),
+    )
+    .handleAction(ProductActionType.DELETE_PRODUCT_FAILED, (state: ProductState, action: PayloadAction<string>) => ({
+        ...state,
+        isProductLoading: false,
+        error: action.payload,
+    }))
     .handleAction(ProductActionType.CLEAR_PRODUCTS, (state: ProductState) => ({
         ...state,
         isProductLoading: false,
