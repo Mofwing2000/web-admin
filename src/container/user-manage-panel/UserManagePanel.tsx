@@ -13,7 +13,10 @@ import * as yup from 'yup';
 import LoadingModal from '../../components/loading-modal/LoadingModal';
 import auth, { db, storage } from '../../config/firebase.config';
 import { DEFAULT_USER_PHOTO_URL as defaultPhotoUrl } from '../../constants/commons';
-import { User } from '../../models/user';
+import { useAppDispatch, useAppSelector } from '../../helpers/hooks';
+import { User, UsersState } from '../../models/user';
+import { addUsersAsync, updateUsersAsync } from '../../store/users/users.action';
+import { selectUsers } from '../../store/users/users.reducer';
 import './user-manage-panel.scss';
 interface IProps {
     type: 'add' | 'update';
@@ -70,6 +73,8 @@ const UserManagePanel = (props: IProps) => {
 
     const [avatar, setAvatar] = useState<File>();
     const [isLoading, setIsLoading] = useState<boolean>(false);
+    const { isUserLoading } = useAppSelector<UsersState>(selectUsers);
+    const dispatch = useAppDispatch();
     const defaultUser: User = {
         id: '',
         email: '',
@@ -189,22 +194,16 @@ const UserManagePanel = (props: IProps) => {
     };
 
     const addUser = async () => {
-        try {
-            const result = await createUserWithEmailAndPassword(auth, userFormValue.email, userFormValue.password);
-
-            await setDoc(doc(db, 'user', result.user.uid), {
+        const result = await createUserWithEmailAndPassword(auth, userFormValue.email, userFormValue.password);
+        dispatch(
+            addUsersAsync.request({
                 ...userFormValue,
                 id: result.user.uid,
-            });
-            setIsLoading(false);
-            toast.success(`${t('common:addUserSucceed')}`);
-            setAvatar(undefined);
-            setUserFormValue({ ...defaultUser });
-            reset({ ...defaultFormValue });
-        } catch (error) {
-            setIsLoading(false);
-            if (error instanceof FirebaseError) toast.error(error.message);
-        }
+            }),
+        );
+        setAvatar(undefined);
+        setUserFormValue({ ...defaultUser });
+        reset({ ...defaultFormValue });
     };
 
     // useEffect(() => {
@@ -212,23 +211,20 @@ const UserManagePanel = (props: IProps) => {
     // }, [props]);
 
     const updateUser = async () => {
-        try {
-            await updateDoc(doc(db, 'user', props.data!.id), {
+        dispatch(
+            updateUsersAsync.request({
                 ...userFormValue,
-            });
-            setIsLoading(false);
-            toast.success(`${t('common:updateUserSucceed')}`);
-        } catch (error) {
-            setIsLoading(false);
-            if (error instanceof FirebaseError) toast(error.message);
-        }
+            }),
+        );
     };
     const onSubmit = async () => {
         setIsLoading(true);
         if (props.type === 'add') {
             await addUser();
+            setIsLoading(false);
         } else if (props.type === 'update') {
             await updateUser();
+            setIsLoading(false);
         }
     };
 
@@ -388,12 +384,12 @@ const UserManagePanel = (props: IProps) => {
                         </div>
                     </div>
                     <div className="manage-user__form__buttons d-flex mt-5 justify-content-center align-items-center gap-3">
-                        <button disabled={isLoading || isLoading} className="btn btn-lg btn-primary " type="submit">
+                        <button disabled={isLoading || isUserLoading} className="btn btn-lg btn-primary " type="submit">
                             {t('common:confirm')}
                         </button>
                         {props.type === 'update' && (
                             <button
-                                disabled={isLoading || isLoading}
+                                disabled={isLoading || isUserLoading}
                                 className="btn btn-lg btn-secondary "
                                 type="submit"
                                 onClick={(e) => {
@@ -407,7 +403,7 @@ const UserManagePanel = (props: IProps) => {
                     </div>
                 </form>
             </div>
-            {isLoading && <LoadingModal />}
+            {(isLoading || isUserLoading) && <LoadingModal />}
         </>
     );
 };

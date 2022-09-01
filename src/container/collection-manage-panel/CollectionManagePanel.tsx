@@ -2,7 +2,7 @@ import { collection, doc, onSnapshot, query, setDoc, updateDoc } from 'firebase/
 import React, { FC, useEffect, useMemo, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { db, storage } from '../../config/firebase.config';
-import { Top, Bottom } from '../../models/product';
+import { Top, Bottom, ProductState } from '../../models/product';
 import ReactTooltip from 'react-tooltip';
 import { useNavigate } from 'react-router-dom';
 import './collection-manage-panel.scss';
@@ -17,6 +17,10 @@ import * as yup from 'yup';
 import { useForm } from 'react-hook-form';
 import { yupResolver } from '@hookform/resolvers/yup';
 import LoadingModal from '../../components/loading-modal/LoadingModal';
+import { useAppDispatch, useAppSelector } from '../../helpers/hooks';
+import { selectProduct } from '../../store/product/product.reducer';
+import { fetchProductsAsync } from '../../store/product/product.action';
+
 interface IProps {
     action: CollectionAction;
     data?: Collection;
@@ -39,11 +43,10 @@ const CollectionManagePanel: FC<IProps> = (props) => {
     const collectionData: Collection = useMemo(() => {
         if (data) return { ...data };
         else return { ...defaultCollection };
-    }, []);
+    }, [data]);
 
     const [collectionValue, setCollectionValue] = useState<Collection>(collectionData);
-    const [productsList, setProductsList] = useState<(Top | Bottom)[]>();
-    // const [collectionValue.productsList, setcollectionValue.productsList] = useState<(Top | Bottom)[]>([]);
+    const { products, isProductLoading } = useAppSelector<ProductState>(selectProduct);
     const [isLoading, setIsLoading] = useState<boolean>(false);
     const [searchValue, setSearchValue] = useState<string>('');
     const [editingItem, setEditingItem] = useState<Top | Bottom>();
@@ -52,6 +55,8 @@ const CollectionManagePanel: FC<IProps> = (props) => {
     const { t } = useTranslation(['product', 'common']);
     const searchResultRef = useRef<HTMLUListElement>(null);
     const navigate = useNavigate();
+    const dispatch = useAppDispatch();
+    const productQuery = query(collection(db, 'product'));
 
     const schema = yup
         .object({
@@ -83,7 +88,7 @@ const CollectionManagePanel: FC<IProps> = (props) => {
     });
 
     const collectionProductValue = useMemo(() => {
-        if (productsList) return productsList.filter((product) => collectionValue.productsList.includes(product.id));
+        if (products) return products.filter((product) => collectionValue.productsList.includes(product.id));
     }, [collectionValue.productsList]);
 
     const handleTitleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -205,25 +210,12 @@ const CollectionManagePanel: FC<IProps> = (props) => {
     };
 
     useEffect(() => {
-        const productQuery = query(collection(db, 'product'));
-        const unsub = onSnapshot(productQuery, (snapShot) => {
-            let list: Array<Top | Bottom> = [];
-            snapShot.docs.forEach((docItem) => {
-                list.push({ ...docItem.data() } as Top | Bottom);
-            });
-            setProductsList(list);
-        });
-
-        return () => {
-            unsub();
-        };
+        dispatch(fetchProductsAsync.request(productQuery));
     }, []);
 
     useEffect(() => {
         uploadBanner();
     }, [banner]);
-
-    console.log(collectionValue);
 
     return (
         <>
@@ -303,8 +295,8 @@ const CollectionManagePanel: FC<IProps> = (props) => {
                                     onMouseDown={(e) => e.preventDefault()}
                                 >
                                     {searchValue &&
-                                        productsList &&
-                                        productsList
+                                        products &&
+                                        products
                                             .filter(
                                                 (product) =>
                                                     product.name &&
@@ -458,7 +450,7 @@ const CollectionManagePanel: FC<IProps> = (props) => {
                     </div>
                 </div>
             </div>
-            {isLoading && <LoadingModal />}
+            {(isLoading || isProductLoading) && <LoadingModal />}
         </>
     );
 };

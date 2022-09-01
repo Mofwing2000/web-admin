@@ -1,5 +1,5 @@
 import { FirebaseError } from '@firebase/util';
-import { collection, onSnapshot, query, Timestamp } from 'firebase/firestore';
+import { collection, getDocs, onSnapshot, query, Timestamp } from 'firebase/firestore';
 import React, { useEffect, useState, useMemo } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { toast } from 'react-toastify';
@@ -11,22 +11,33 @@ import moment from 'moment';
 import LoadingModal from '../../components/loading-modal/LoadingModal';
 import { useTranslation } from 'react-i18next';
 import OrderTable from '../../components/order-table/OrderTable';
+import { useAppDispatch, useAppSelector } from '../../helpers/hooks';
+import { selectProduct } from '../../store/product/product.reducer';
+import { ProductState } from '../../models/product';
+import { clearProducts, fetchProductsAsync } from '../../store/product/product.action';
 const DashBoard = () => {
     const [isLoading, setIsLoading] = useState<boolean>(false);
     const [totalUser, setTotalUser] = useState<number>(0);
-    const [totalProduct, setTotalProduct] = useState<number>(0);
     const [totalOrder, setTotalOrder] = useState<number>(0);
     const [totalIncome, setTotalIncome] = useState<number>(0);
     const [latestOrders, setLatestOrders] = useState<Order[]>();
     const [thisMonthOrders, setThisMonthOrders] = useState<Order[]>([]);
     const [lastMonthOrders, setLastMonthOrders] = useState<Order[]>([]);
     const [tooltip, setTooltip] = useState<boolean>(false);
+    const { products, isProductLoading } = useAppSelector<ProductState>(selectProduct);
     const { t } = useTranslation(['dashBoard']);
     const navigate = useNavigate();
-
+    const dispatch = useAppDispatch();
+    const productQuery = query(collection(db, 'product'));
+    const fetchUserQuery = query(collection(db, 'user'));
+    const fetchOrderQuery = query(collection(db, 'order'));
     const today = new Date();
     const thisMonth = new Date(today.getFullYear(), today.getMonth());
     const lastMonth = new Date(today.getFullYear(), today.getMonth() - 1);
+
+    const totalProduct = useMemo(() => {
+        return products.length;
+    }, [products]);
 
     const calculateIncreasePercent = (after: number, before: number) =>
         before === 0 ? ((after - before) * 100) / 1 : ((after - before) * 100) / before;
@@ -36,89 +47,71 @@ const DashBoard = () => {
     };
     useEffect(() => {
         setIsLoading(true);
-        const fetchQuery = query(collection(db, 'user'));
-        const unsub = onSnapshot(
-            fetchQuery,
-            (snapShot) => {
-                setTotalUser(snapShot.docs.length);
+        const fetchUser = async () => {
+            try {
+                const docSnap = await getDocs(fetchUserQuery);
+                if (!docSnap.empty) setTotalUser(docSnap.docs.length);
                 setIsLoading(false);
-            },
-            (error) => {
+            } catch (error) {
                 if (error instanceof FirebaseError) toast.error(error.message);
                 setIsLoading(false);
-            },
-        );
+            }
+        };
+        fetchUser();
+    }, []);
+
+    useEffect(() => {
+        dispatch(fetchProductsAsync.request(productQuery));
         return () => {
-            unsub();
+            dispatch(clearProducts());
         };
     }, []);
 
     useEffect(() => {
         setIsLoading(true);
-        const fetchQuery = query(collection(db, 'product'));
-        const unsub = onSnapshot(
-            fetchQuery,
-            (snapShot) => {
-                setTotalProduct(snapShot.docs.length);
+        const fetchOrder = async () => {
+            try {
+                const docSnap = await getDocs(fetchOrderQuery);
+                if (!docSnap.empty) {
+                    setTotalOrder(docSnap.docs.length);
+
+                    const totalAmount = docSnap.docs.reduce((total, current) => {
+                        return total + (current.data() as Order).totalAmount;
+                    }, 0);
+                    setTotalIncome(totalAmount);
+
+                    const latestOrdersData = docSnap.docs
+                        .sort((a, b) =>
+                            ((b.data() as Order).orderDate as unknown as Timestamp).toDate() >
+                            ((a.data() as Order).orderDate as unknown as Timestamp).toDate()
+                                ? 1
+                                : -1,
+                        )
+                        .splice(0, 5);
+                    setLatestOrders([...latestOrdersData.map((order) => order.data() as Order)]);
+
+                    const thisMonthOrdersData = docSnap.docs.filter((orderData) => {
+                        const order = orderData.data() as Order;
+                        const orderDate = (order.orderDate as unknown as Timestamp).toDate();
+                        return orderDate >= thisMonth && orderDate <= today;
+                    });
+                    setThisMonthOrders([...thisMonthOrdersData.map((order) => order.data() as Order)]);
+
+                    const lastMonthOrdersData = docSnap.docs.filter((orderData) => {
+                        const order = orderData.data() as Order;
+                        const orderDate = (order.orderDate as unknown as Timestamp).toDate();
+                        return orderDate >= lastMonth && orderDate < thisMonth;
+                    });
+                    setLastMonthOrders([...lastMonthOrdersData.map((order) => order.data() as Order)]);
+                }
                 setIsLoading(false);
-            },
-            (error) => {
+            } catch (error) {
                 if (error instanceof FirebaseError) toast.error(error.message);
                 setIsLoading(false);
-            },
-        );
-        return () => {
-            unsub();
+            }
         };
-    }, []);
 
-    useEffect(() => {
-        setIsLoading(true);
-        const fetchQuery = query(collection(db, 'order'));
-        const unsub = onSnapshot(
-            fetchQuery,
-            (snapShot) => {
-                setTotalOrder(snapShot.docs.length);
-
-                const totalAmount = snapShot.docs.reduce((total, current) => {
-                    return total + (current.data() as Order).totalAmount;
-                }, 0);
-                setTotalIncome(totalAmount);
-
-                const latestOrdersData = snapShot.docs
-                    .sort((a, b) =>
-                        ((b.data() as Order).orderDate as unknown as Timestamp).toDate() >
-                        ((a.data() as Order).orderDate as unknown as Timestamp).toDate()
-                            ? 1
-                            : -1,
-                    )
-                    .splice(0, 5);
-                setLatestOrders([...latestOrdersData.map((order) => order.data() as Order)]);
-
-                const thisMonthOrdersData = snapShot.docs.filter((orderData) => {
-                    const order = orderData.data() as Order;
-                    const orderDate = (order.orderDate as unknown as Timestamp).toDate();
-                    return orderDate >= thisMonth && orderDate <= today;
-                });
-                setThisMonthOrders([...thisMonthOrdersData.map((order) => order.data() as Order)]);
-
-                const lastMonthOrdersData = snapShot.docs.filter((orderData) => {
-                    const order = orderData.data() as Order;
-                    const orderDate = (order.orderDate as unknown as Timestamp).toDate();
-                    return orderDate >= lastMonth && orderDate < thisMonth;
-                });
-                setLastMonthOrders([...lastMonthOrdersData.map((order) => order.data() as Order)]);
-
-                setIsLoading(false);
-            },
-            (error) => {
-                if (error instanceof FirebaseError) toast.error(error.message);
-                setIsLoading(false);
-            },
-        );
-        return () => {
-            unsub();
-        };
+        fetchOrder();
     }, []);
 
     return (

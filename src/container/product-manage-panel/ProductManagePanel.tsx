@@ -5,7 +5,17 @@ import { ref, uploadBytesResumable, getDownloadURL } from 'firebase/storage';
 import auth, { storage, db } from '../../config/firebase.config';
 import cuid from 'cuid';
 import * as yup from 'yup';
-import { ProductType, Top, Bottom, Color, TopCategory, BottomCategory, Size, Product } from '../../models/product';
+import {
+    ProductType,
+    Top,
+    Bottom,
+    Color,
+    TopCategory,
+    BottomCategory,
+    Size,
+    Product,
+    ProductState,
+} from '../../models/product';
 import { DEFAULT_PRODUCT_PHOTO_URL as defaultPhotoUrl } from '../../constants/commons';
 import './product-manage-panel.scss';
 import { doc, setDoc, updateDoc } from 'firebase/firestore';
@@ -15,6 +25,9 @@ import { toast } from 'react-toastify';
 import { FirebaseError } from '@firebase/util';
 import LoadingModal from '../../components/loading-modal/LoadingModal';
 import { useTranslation } from 'react-i18next';
+import { useAppDispatch, useAppSelector } from '../../helpers/hooks';
+import { addProductAsync, updateProductAsync } from '../../store/product/product.action';
+import { selectProduct } from '../../store/product/product.reducer';
 
 interface IProps {
     type: ProductAction;
@@ -36,6 +49,8 @@ interface FormValue {
 
 const ProductManagePanel: FC<IProps> = (props) => {
     const { t } = useTranslation(['common', 'product']);
+    const dispatch = useAppDispatch();
+    const { isProductLoading } = useAppSelector<ProductState>(selectProduct);
     const schema = yup
         .object({
             name: yup
@@ -269,41 +284,29 @@ const ProductManagePanel: FC<IProps> = (props) => {
     };
 
     const updateProduct = async () => {
-        try {
-            await updateDoc(doc(db, 'product', product.id), {
+        dispatch(
+            updateProductAsync.request({
                 ...productFormValue,
                 updatedAt: new Date(Date.now()),
-            });
-            setIsLoading(false);
-            toast.success(`${t('common:updateProductSucceed')}`);
-        } catch (error) {
-            setIsLoading(false);
-            if (error instanceof FirebaseError) toast.error(error.message);
-        }
+            }),
+        );
     };
 
     const addProduct = async () => {
-        try {
-            const id = cuid();
-            await setDoc(doc(db, 'product', id), {
+        const id = cuid();
+        dispatch(
+            addProductAsync.request({
                 ...productFormValue,
                 id: id,
                 description: productFormValue.description.replace('\\n', '\n'),
                 createdAt: new Date(Date.now()),
                 updatedAt: new Date(Date.now()),
-            });
-            console.log({ ...productFormValue });
-            setIsLoading(false);
-            toast.success(`${t('common:addProductSucceed')}`);
-            setProductPhoto(undefined);
-            if (props.type === 'add-top') setProductFormValue({ ...defaultTop });
-            else if (props.type === 'add-bottom') setProductFormValue({ ...defaultBottom });
-            reset({ ...defaultFormValue });
-        } catch (error) {
-            console.log(error);
-            setIsLoading(false);
-            if (error instanceof FirebaseError) toast(error.message);
-        }
+            }),
+        );
+        setProductPhoto(undefined);
+        if (props.type === 'add-top') setProductFormValue({ ...defaultTop });
+        else if (props.type === 'add-bottom') setProductFormValue({ ...defaultBottom });
+        reset({ ...defaultFormValue });
     };
 
     const onSubmit = async () => {
@@ -315,9 +318,11 @@ const ProductManagePanel: FC<IProps> = (props) => {
         }
         if (props.type === 'add-top' || props.type === 'add-bottom') {
             await addProduct();
+            setIsLoading(false);
             // navigate(-1);
         } else if (props.type === 'update') {
             await updateProduct();
+            setIsLoading(false);
             navigate(-1);
         }
     };
@@ -515,12 +520,12 @@ const ProductManagePanel: FC<IProps> = (props) => {
                     </div>
                 </div>
                 <div className="manage-product__form__buttons d-flex mt-5 justify-content-center align-items-center gap-3">
-                    <button disabled={isLoading || isLoading} className="btn btn-lg btn-primary " type="submit">
+                    <button disabled={isLoading || isProductLoading} className="btn btn-lg btn-primary " type="submit">
                         {t('common:confirm')}
                     </button>
                     {props.type === 'update' && (
                         <button
-                            disabled={isLoading || isLoading}
+                            disabled={isLoading || isProductLoading}
                             className="btn btn-lg btn-secondary "
                             onClick={() => navigate(-1)}
                         >
