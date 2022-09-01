@@ -1,35 +1,33 @@
-import React from 'react';
+import React, { FC, memo } from 'react';
 import { useTranslation } from 'react-i18next';
-import { PaginationProps } from '../../models/page';
+import ReactPaginate, { ReactPaginateProps } from 'react-paginate';
 import './pagination.scss';
-const Pagination = (props: PaginationProps) => {
-    const { pageNumber, isLastPage, handlePrev, handleNext } = props;
+
+interface PaginationProps {
+    onPageChange: ReactPaginateProps['onPageChange'];
+    pageCount: ReactPaginateProps['pageCount'];
+}
+
+const Pagination: FC<PaginationProps> = (props) => {
     const { t } = useTranslation(['common']);
+    const { onPageChange, pageCount } = props;
     return (
-        <div className="pagination mt-5">
-            {pageNumber !== 1 && (
-                <button
-                    className="pagination__btn btn btn-primary"
-                    onClick={() => {
-                        handlePrev();
-                    }}
-                >
-                    {t('common:prev')}
-                </button>
-            )}
-            <span className="pagination__page-number">{pageNumber}</span>
-            {!isLastPage && (
-                <button
-                    className="pagination__btn btn btn-primary"
-                    onClick={() => {
-                        handleNext();
-                    }}
-                >
-                    {t('common:next')}
-                </button>
-            )}
-        </div>
+        <ReactPaginate
+            breakLabel="..."
+            className="pagination"
+            nextLabel=">"
+            onPageChange={onPageChange}
+            pageRangeDisplayed={5}
+            pageCount={pageCount}
+            previousLabel="<"
+            renderOnZeroPageCount={() => null}
+            activeClassName="text-danger "
+            previousLinkClassName="pagination__prev-page fw-bold"
+            nextLinkClassName="pagination__next-page fw-bold"
+            pageClassName="pagination__item"
+            containerClassName="pagination__container"
+        />
     );
 };
 
-export default Pagination;
+export default memo(Pagination);
