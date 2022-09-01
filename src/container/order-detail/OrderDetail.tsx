@@ -1,6 +1,6 @@
 import { FirebaseError } from '@firebase/util';
-import { getDoc, doc, updateDoc, onSnapshot, Timestamp } from 'firebase/firestore';
-import React, { useEffect, useRef, useState } from 'react';
+import { getDoc, doc, updateDoc, onSnapshot, Timestamp, runTransaction } from 'firebase/firestore';
+import React, { useCallback, useEffect, useRef, useState } from 'react';
 import { useParams } from 'react-router-dom';
 import { toast } from 'react-toastify';
 import LoadingModal from '../../components/loading-modal/LoadingModal';
@@ -70,6 +70,34 @@ const OrderDetail = () => {
         }
     };
 
+    const updateQuantity = async (id: string, tempLimit: any) => {
+        const docRef = doc(db, 'product', id);
+        try {
+            await runTransaction(db, async (transaction) => {
+                const sfDoc = await transaction.get(docRef);
+                if (sfDoc.exists()) {
+                    const newQuantity = sfDoc.data().quantity + tempLimit[id];
+                    transaction.update(docRef, { quantity: newQuantity });
+                }
+            });
+        } catch (error) {
+            if (error instanceof FirebaseError) toast.error(error.message);
+        }
+    };
+
+    const returnQuantity = useCallback(async () => {
+        let tempLimit: any = {};
+        if (orderData) {
+            if (orderData.orderedProducts) {
+                orderData.orderedProducts.forEach((item) => {
+                    if (typeof tempLimit[item.id] === 'undefined') tempLimit[item.id] = item.quantity;
+                    else tempLimit[item.id] += item.quantity;
+                });
+            }
+            await Promise.all(Object.keys(tempLimit).map((item) => updateQuantity(item, tempLimit)));
+        }
+    }, [orderData]);
+
     const handleCancelOrder = async () => {
         if (trackingFormRef.current!.classList.contains('show')) trackingFormRef.current!.classList.remove('show');
         setIsLoading(false);
@@ -77,6 +105,7 @@ const OrderDetail = () => {
             await updateDoc(doc(db, 'order', orderData!.id), {
                 orderState: OrderState.CANCELED,
             });
+            await returnQuantity();
             setIsLoading(false);
         } catch (error) {
             if (error instanceof FirebaseError) toast.error(error.message);
