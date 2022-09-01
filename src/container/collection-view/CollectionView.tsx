@@ -1,41 +1,36 @@
 import { FirebaseError } from '@firebase/util';
-import { doc, onSnapshot } from 'firebase/firestore';
+import { doc, getDoc } from 'firebase/firestore';
 import React, { useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { useNavigate, useParams } from 'react-router-dom';
+import { useParams } from 'react-router-dom';
 import { toast } from 'react-toastify';
 import LoadingModal from '../../components/loading-modal/LoadingModal';
 import { db } from '../../config/firebase.config';
-import { Collection } from '../../models/collection';
 import { DEFAULT_COLLECTION_PHOTO_URL as defaultCollectionBanner } from '../../constants/commons';
+import { Collection } from '../../models/collection';
 const CollectionView = () => {
     const { collectionId } = useParams();
     const { t } = useTranslation(['common', 'product']);
     const [isLoading, setIsLoading] = useState<boolean>(false);
     const [collectionData, setCollectionData] = useState<Collection>();
-    const navigate = useNavigate();
 
     useEffect(() => {
         setIsLoading(true);
         const docRef = doc(db, 'collection', collectionId as string);
-        const unsub = onSnapshot(
-            docRef,
-            (document) => {
-                if (document.exists()) {
-                    const collection = document.data() as Collection;
-                    setCollectionData(collection);
-                    setIsLoading(false);
-                }
-            },
-            (error) => {
-                if (error instanceof FirebaseError) toast.error(error.message);
-                setIsLoading(false);
-            },
-        );
+        const fetchData = async () => {
+            try {
+                const docSnap = await getDoc(docRef);
+                if (docSnap.exists()) setCollectionData({ ...docSnap.data() } as Collection);
 
-        return () => {
-            unsub();
+                setIsLoading(false);
+            } catch (error) {
+                if (error instanceof FirebaseError) {
+                    setIsLoading(false);
+                    toast.error(error.message);
+                }
+            }
         };
+        fetchData();
     }, []);
 
     return (
