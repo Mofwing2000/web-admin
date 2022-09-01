@@ -13,15 +13,20 @@ import {
     QueryDocumentSnapshot,
     startAfter,
 } from 'firebase/firestore';
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useNavigate } from 'react-router-dom';
 import { toast } from 'react-toastify';
 import ReactTooltip from 'react-tooltip';
 import LoadingModal from '../../components/loading-modal/LoadingModal';
 import Pagination from '../../components/pagination/Pagination';
+import ProductFilterBar from '../../components/product-filter-bar/ProductFilterBar';
 import { db } from '../../config/firebase.config';
-import { Bottom, ProductType, Top } from '../../models/product';
+import { useAppDispatch, useAppSelector } from '../../helpers/hooks';
+import { Bottom, ProductState, ProductType, Top } from '../../models/product';
+import { fetchOrdersAsync } from '../../store/order/order.action';
+import { clearProducts, deleteProductAsync, fetchProductsAsync } from '../../store/product/product.action';
+import { selectProduct } from '../../store/product/product.reducer';
 import { PageLimit, PageOrder, PageProductSort } from '../../type/page-type';
 import { ProductAction } from '../../type/product-manage';
 import ProductManagePanel from '../product-manage-panel/ProductManagePanel';
@@ -30,23 +35,26 @@ import './product-management.scss';
 const ProductManage = () => {
     const { t } = useTranslation(['common', 'product']);
     const [tooltip, setTooltip] = useState<boolean>(true);
-    const [productsData, setProductsData] = useState<(Top | Bottom)[]>();
-    const [lastDoc, setLastDoc] = useState<QueryDocumentSnapshot<DocumentData>>();
-    const [firstDoc, setFirstDoc] = useState<QueryDocumentSnapshot<DocumentData>>();
-    const [curPage, setCurPage] = useState<number>(1);
+    const { products, isProductLoading } = useAppSelector<ProductState>(selectProduct);
     const [pageSize, setPageSize] = useState<PageLimit>(10);
-    const [sortType, setSortType] = useState<PageProductSort>('default');
+    const [sortType, setSortType] = useState<PageProductSort>('id');
     const [sortOrder, setSortOrder] = useState<PageOrder>('asc');
+    const [pageCount, setPageCount] = useState<number>(0);
+    const [itemOffset, setItemOffset] = useState<number>(0);
+    const [currentFilteredProduct, setCurrentFilteredProduct] = useState<(Top | Bottom)[]>([]);
     const [isEditing, setIsEditing] = useState<Boolean>(false);
     const [addType, setAddtype] = useState<ProductAction>('add-top');
     const [editingItem, setEditingItem] = useState<null | string>(null);
-    const sortTypeValue = sortType === 'default' ? 'id' : sortType === 'name' ? 'name' : 'price';
-    const sortOrderValue = sortOrder === 'asc' ? 'asc' : 'desc';
-    const [isLoading, setIsLoading] = useState<boolean>(false);
     const navigate = useNavigate();
+    const dispatch = useAppDispatch();
+    const filterQuery = useMemo(
+        () => query(collection(db, 'product'), orderBy(sortType, sortOrder)),
+        [sortType, sortOrder],
+    );
     const handleProductDelete = async () => {
-        if (editingItem) await deleteDoc(doc(db, 'product', editingItem));
-        toast.success(`${t('common:deleteProductSucceed')}`);
+        if (editingItem) {
+            dispatch(deleteProductAsync.request(editingItem));
+        }
         setEditingItem(null);
     };
 
@@ -55,96 +63,29 @@ const ProductManage = () => {
         navigate(`/product/view/${data.id}/${productNameUrl}`);
     };
 
-    const handleNextPage = () => {
-        setIsLoading(true);
-        const filterQueryNext = query(
-            collection(db, 'product'),
-            limit(pageSize as number),
-            orderBy(sortTypeValue, sortOrderValue),
-            startAfter(lastDoc),
-        );
-        onSnapshot(
-            filterQueryNext,
-            (snapShot) => {
-                let list: Array<Top | Bottom> = [];
-
-                snapShot.docs.forEach((docItem) => {
-                    list.push({ ...docItem.data() } as Top | Bottom);
-                });
-                setProductsData(list);
-                setLastDoc(snapShot.docs[snapShot.docs.length - 1]);
-                setFirstDoc(snapShot.docs[0]);
-                setCurPage(curPage + 1);
-                setIsLoading(false);
-            },
-            (error) => {
-                setIsLoading(false);
-                if (error instanceof FirebaseError) toast.error(error.message);
-            },
-        );
+    const handlePageClick = (event: { selected: number }) => {
+        if (products) {
+            const newOffset = (event.selected * pageSize) % products.length;
+            setItemOffset(newOffset);
+        }
     };
 
-    const handlePrevPage = () => {
-        setIsLoading(true);
-        const filterQueryNext = query(
-            collection(db, 'product'),
-            limit(pageSize as number),
-            orderBy(sortTypeValue, sortOrderValue),
-            endBefore(firstDoc),
-            limitToLast(pageSize),
-        );
-        onSnapshot(
-            filterQueryNext,
-            (snapShot) => {
-                let list: Array<Top | Bottom> = [];
-                snapShot.docs.forEach((docItem) => {
-                    list.push({ ...docItem.data() } as Top | Bottom);
-                });
-                setFirstDoc(snapShot.docs[0]);
-                setLastDoc(snapShot.docs[snapShot.docs.length - 1]);
-                setProductsData(list);
-                setCurPage(curPage - 1);
-                setIsLoading(false);
-            },
-            (error) => {
-                setIsLoading(false);
-                if (error instanceof FirebaseError) toast.error(error.message);
-            },
-        );
-    };
-    console.log('render');
     useEffect(() => {
-        setCurPage(1);
-        setIsLoading(true);
-        const filterQuery = query(
-            collection(db, 'product'),
-            limit(pageSize as number),
-            orderBy(
-                sortType === 'default' ? 'id' : sortType === 'name' ? 'name' : 'price',
-                sortOrder === 'asc' ? 'asc' : 'desc',
-            ),
-        );
-        const unsub = onSnapshot(
-            filterQuery,
-            (snapShot) => {
-                let list: Array<Top | Bottom> = [];
-                snapShot.docs.forEach((docItem) => {
-                    list.push({ ...docItem.data() } as Top | Bottom);
-                });
-                setLastDoc(snapShot.docs[snapShot.docs.length - 1]);
-                setFirstDoc(snapShot.docs[0]);
-                setProductsData(list);
-                setIsLoading(false);
-            },
-            (error) => {
-                setIsLoading(false);
-                if (error instanceof FirebaseError) toast.error(error.message);
-            },
-        );
+        if (products.length) {
+            const endOffset = itemOffset + pageSize;
+            console.log(products);
+
+            setCurrentFilteredProduct(products.slice(itemOffset, endOffset));
+            setPageCount(Math.ceil(products.length / pageSize));
+        }
+    }, [itemOffset, products, pageSize]);
+
+    useEffect(() => {
+        dispatch(fetchProductsAsync.request(filterQuery));
         return () => {
-            unsub();
+            dispatch(clearProducts());
         };
-    }, [pageSize, sortType, sortOrder]);
+    }, [pageSize, filterQuery]);
     return (
         <div className="product-manage-container">
             <div className="product-manage-container__add position-relative">
@@ -181,60 +122,14 @@ const ProductManage = () => {
             </div>
             <div className="product-manage-container__filter">
                 <div className="product-manage-container__filter__control d-flex gap-5 mt-5">
-                    <div className="form-group">
-                        <label htmlFor="pageLimit">{t('common:itemsPerPage')}</label>
-                        <select
-                            defaultValue={10}
-                            id="pageLimit"
-                            className="form-select "
-                            aria-label="pageLimit-select"
-                            onChange={(e) =>
-                                setPageSize(e.target.value === '10' ? 10 : e.target.value === '20' ? 20 : 50)
-                            }
-                        >
-                            <option value="10">10</option>
-                            <option value="20">20</option>
-                            <option value="50">50</option>
-                        </select>
-                    </div>
-                    <div className="form-group">
-                        <label htmlFor="sort">{t('common:sortBy')}</label>
-                        <div className="d-flex">
-                            <select
-                                defaultValue={10}
-                                id="sort"
-                                className="form-select "
-                                aria-label="sort-select"
-                                onChange={(e) =>
-                                    setSortType(
-                                        e.target.value === 'default'
-                                            ? 'default'
-                                            : e.target.value === 'name'
-                                            ? 'name'
-                                            : 'price',
-                                    )
-                                }
-                            >
-                                <option value="default">{t('common:sortBy')}</option>
-                                <option value="name">{t('product:name')}</option>
-                                <option value="price">{t('product:price')}</option>
-                            </select>
-                            <button
-                                className="btn btn-outline-secondary d-inline-block"
-                                onClick={() => {
-                                    if (sortOrder === 'asc') {
-                                        setSortOrder('desc');
-                                    } else setSortOrder('asc');
-                                }}
-                            >
-                                {sortOrder === 'asc' ? (
-                                    <i className="fa-solid fa-arrow-down-a-z"></i>
-                                ) : (
-                                    <i className="fa-solid fa-arrow-up-a-z"></i>
-                                )}
-                            </button>
-                        </div>
-                    </div>
+                    <ProductFilterBar
+                        pageSize={pageSize}
+                        sortType={sortType}
+                        sortOrder={sortOrder}
+                        setPageSize={setPageSize}
+                        setSortType={setSortType}
+                        setSortOrder={setSortOrder}
+                    />
                 </div>
                 <div className="product-manage-container__table table-responsive-sm">
                     <table className="table table-bordered mt-3">
@@ -270,8 +165,8 @@ const ProductManage = () => {
                             </tr>
                         </thead>
                         <tbody className="product-manage-container__table__body">
-                            {productsData &&
-                                productsData.map((data, index) => (
+                            {currentFilteredProduct &&
+                                currentFilteredProduct.map((data, index) => (
                                     <tr key={index} className="product-manage-container__table__body__row d-flex">
                                         <td className="product-manage-container__table__body__row__data product-image-container col-1 d-inline-block text-truncate">
                                             <div
@@ -435,14 +330,7 @@ const ProductManage = () => {
                     </table>
                 </div>
                 <div className="product-manage-container__table__pagination">
-                    {productsData && (
-                        <Pagination
-                            pageNumber={curPage}
-                            isLastPage={productsData!.length < pageSize ? true : false}
-                            handleNext={handleNextPage}
-                            handlePrev={handlePrevPage}
-                        />
-                    )}
+                    {currentFilteredProduct && <Pagination onPageChange={handlePageClick} pageCount={pageCount} />}
                 </div>
             </div>
             <div className="modal" id="confirmModal">
@@ -476,7 +364,7 @@ const ProductManage = () => {
                     </div>
                 </div>
             </div>
-            {isLoading && <LoadingModal />}
+            {isProductLoading && <LoadingModal />}
         </div>
     );
 };

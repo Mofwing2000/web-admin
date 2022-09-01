@@ -16,7 +16,7 @@ import {
 import { useNavigate } from 'react-router-dom';
 import Pagination from '../../components/pagination/Pagination';
 import { db } from '../../config/firebase.config';
-import { User } from '../../models/user';
+import { User, UsersState, UserState } from '../../models/user';
 import { PageLimit, PageOrder, PageUserSort } from '../../type/page-type';
 import UserManagePanel from '../user-manage-panel/UserManagePanel';
 import './user-manage.scss';
@@ -25,24 +25,28 @@ import { toast } from 'react-toastify';
 import ReactTooltip from 'react-tooltip';
 import LoadingModal from '../../components/loading-modal/LoadingModal';
 import { useTranslation } from 'react-i18next';
+import { useAppDispatch, useAppSelector } from '../../helpers/hooks';
+import { selectUsers } from '../../store/users/users.reducer';
+import { clearUsers, fetchUsersAsync } from '../../store/users/users.action';
 
 const UserManage = () => {
-    const [usersData, setUsersData] = useState<User[]>();
+    const { users, isUserLoading } = useAppSelector<UsersState>(selectUsers);
     const [lastDoc, setLastDoc] = useState<QueryDocumentSnapshot<DocumentData>>();
     const [firstDoc, setFirstDoc] = useState<QueryDocumentSnapshot<DocumentData>>();
     const [curPage, setCurPage] = useState<number>(1);
     const [pageSize, setPageSize] = useState<PageLimit>(10);
-    const [sortType, setSortType] = useState<PageUserSort>('default');
+    const [sortType, setSortType] = useState<PageUserSort>('id');
     const [sortOrder, setSortOrder] = useState<PageOrder>('asc');
     const [isEditing, setIsEditing] = useState<Boolean>(false);
     const [editingItem, setEditingItem] = useState<null | string>(null);
     const [isLoading, setIsLoading] = useState<boolean>();
+    const [pageCount, setPageCount] = useState<number>(0);
+    const [itemOffset, setItemOffset] = useState<number>(0);
     const [tooltip, setTooltip] = useState<boolean>(false);
-    const sortTypeValue = sortType === 'default' ? 'id' : sortType === 'address' ? 'address' : 'role';
-    const sortOrderValue = sortOrder === 'asc' ? 'asc' : 'desc';
     const { t } = useTranslation(['common', 'user']);
+    const [currentFilteredUsers, setCurrentFilteredUsers] = useState<User[]>([]);
     const navigate = useNavigate();
-
+    const dispatch = useAppDispatch();
     const handleUserDelete = async () => {
         setIsLoading(true);
         if (editingItem)
@@ -57,100 +61,33 @@ const UserManage = () => {
         setEditingItem(null);
     };
 
+    const handlePageClick = (event: { selected: number }) => {
+        if (users) {
+            const newOffset = (event.selected * pageSize) % users.length;
+            setItemOffset(newOffset);
+        }
+    };
+
+    useEffect(() => {
+        if (users) {
+            const endOffset = itemOffset + pageSize;
+            setCurrentFilteredUsers(users.slice(itemOffset, endOffset));
+            setPageCount(Math.ceil(users.length / pageSize));
+        }
+    }, [itemOffset, users, pageSize]);
+
     const handleView = (data: User) => {
         navigate(`/user/view/${data.id}`);
     };
 
-    const handleNextPage = () => {
-        setIsLoading(true);
-        const filterQueryNext = query(
-            collection(db, 'user'),
-            limit(pageSize as number),
-            orderBy(sortTypeValue, sortOrderValue),
-            startAfter(lastDoc),
-        );
-        onSnapshot(
-            filterQueryNext,
-            (snapShot) => {
-                let list: Array<User> = [];
-                snapShot.docs.forEach((docItem) => {
-                    list.push({ ...docItem.data() } as User);
-                });
-                setUsersData(list);
-                setLastDoc(snapShot.docs[snapShot.docs.length - 1]);
-                setFirstDoc(snapShot.docs[0]);
-                setCurPage(curPage + 1);
-                setIsLoading(false);
-            },
-            (error) => {
-                setIsLoading(false);
-                if (error instanceof FirebaseError) toast.error(error.message);
-            },
-        );
-    };
-
-    const handlePrevPage = () => {
-        setIsLoading(true);
-        const filterQueryNext = query(
-            collection(db, 'user'),
-            limit(pageSize as number),
-            orderBy(sortTypeValue, sortOrderValue),
-            endBefore(firstDoc),
-            limitToLast(pageSize),
-        );
-        onSnapshot(
-            filterQueryNext,
-            (snapShot) => {
-                console.log(snapShot);
-                let list: Array<User> = [];
-                snapShot.docs.forEach((docItem) => {
-                    list.push({ ...docItem.data() } as User);
-                });
-                setFirstDoc(snapShot.docs[0]);
-                setLastDoc(snapShot.docs[snapShot.docs.length - 1]);
-                setUsersData(list);
-                setCurPage(curPage - 1);
-                setIsLoading(false);
-            },
-            (error) => {
-                setIsLoading(false);
-                if (error instanceof FirebaseError) toast.error(error.message);
-            },
-        );
-    };
-
     useEffect(() => {
-        setIsLoading(true);
-        setCurPage(1);
-        const filterQuery = query(
-            collection(db, 'user'),
-            limit(pageSize as number),
-            orderBy(
-                sortType === 'default' ? 'id' : sortType === 'address' ? 'address' : 'role',
-                sortOrder === 'asc' ? 'asc' : 'desc',
-            ),
-        );
-        const unsub = onSnapshot(
-            filterQuery,
-            (snapShot) => {
-                let list: Array<User> = [];
-                snapShot.docs.forEach((docItem) => {
-                    list.push({ ...docItem.data() } as User);
-                });
-                setLastDoc(snapShot.docs[snapShot.docs.length - 1]);
-                setFirstDoc(snapShot.docs[0]);
-                setUsersData(list);
-                setIsLoading(false);
-            },
-            (error) => {
-                setIsLoading(false);
-                if (error instanceof FirebaseError) toast.error(error.message);
-            },
-        );
-        return () => {
-            unsub();
-        };
+        const filterQuery = query(collection(db, 'user'), orderBy(sortType, sortOrder));
+        dispatch(fetchUsersAsync.request(filterQuery));
+        // return () => {
+        //     dispatch(clearUsers());
+        // };
     }, [pageSize, sortType, sortOrder]);
+    console.log(users);
     return (
         <div className="user-manage">
             <div className="user-manage__add position-relative">
@@ -201,8 +138,8 @@ const UserManage = () => {
                                 aria-label="sort-select"
                                 onChange={(e) =>
                                     setSortType(
-                                        e.target.value === 'default'
-                                            ? 'default'
+                                        e.target.value === 'id'
+                                            ? 'id'
                                             : e.target.value === 'address'
                                             ? 'address'
                                             : 'role',
@@ -260,8 +197,8 @@ const UserManage = () => {
                         </tr>
                     </thead>
                     <tbody className="user-manage__table__body">
-                        {usersData &&
-                            usersData!.map((userData, index) => (
+                        {currentFilteredUsers &&
+                            currentFilteredUsers!.map((userData, index) => (
                                 <tr className="user-manage__table__body__row d-flex" key={index}>
                                     <td className="user-manage__table__body__row__data user-image col-1 d-inlne-block text-truncate">
                                         <div
@@ -356,14 +293,7 @@ const UserManage = () => {
                 </table>
             </div>
             <div className="user-manage__table__pagination">
-                {usersData && (
-                    <Pagination
-                        pageNumber={curPage}
-                        isLastPage={usersData!.length < pageSize ? true : false}
-                        handleNext={handleNextPage}
-                        handlePrev={handlePrevPage}
-                    />
-                )}
+                {currentFilteredUsers && <Pagination onPageChange={handlePageClick} pageCount={pageCount} />}
             </div>
             <div className="modal" id="confirmModal">
                 <div className="modal-dialog modal-dialog-centered">
