@@ -5,12 +5,13 @@ import { Link } from 'react-router-dom';
 import Logo from '../../assets/image/logo.png';
 import { DEFAULT_USER_PHOTO_URL as defaultUserPhoto } from '../../constants/commons';
 import { useAppDispatch, useAppSelector } from '../../helpers/hooks';
+import { UserState } from '../../models/user';
 import { logout } from '../../store/auth/auth.action';
 import { toggleDarkMode } from '../../store/dark-mode/dark-mode.action';
-import { selectAuth } from '../../store/root-reducer';
+import { selectUser } from '../../store/user/user.reducer';
 import './header.scss';
 const Header = () => {
-    const { currentUser } = useAppSelector<any>(selectAuth);
+    const { user } = useAppSelector<UserState>(selectUser);
     const dispatch = useAppDispatch();
     const handleLogout = () => {
         dispatch(logout());
@@ -54,9 +55,7 @@ const Header = () => {
                             data-bs-toggle="dropdown"
                             aria-expanded="false"
                             style={{
-                                backgroundImage: currentUser.photoUrl
-                                    ? `url(${currentUser.photoUrl})`
-                                    : `url(${defaultUserPhoto}`,
+                                backgroundImage: user?.photoUrl ? `url(${user.photoUrl})` : `url(${defaultUserPhoto}`,
                             }}
                         ></div>
 
@@ -65,7 +64,7 @@ const Header = () => {
                             aria-labelledby="dropdownUserIcon"
                         >
                             <li>
-                                <Link to={`user/view/${currentUser.id}`}>
+                                <Link to={`user/view/${user?.id}`}>
                                     <i className="fa-solid fa-user me-3"></i>
                                     {t('common:profile')}
                                 </Link>
