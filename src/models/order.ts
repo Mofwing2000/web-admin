@@ -3,7 +3,7 @@ import { Color, Size } from './product';
 export interface Order {
     id: string;
     userId: string;
-    orderedProducts: Array<OrderdItem>;
+    orderedProducts: Array<OrderedItem>;
     shippingAddress: string;
     paymentMethod: PaymentMethod;
     shippingType: ShippingType;
@@ -26,7 +26,7 @@ export type ShippingType =
 
 export enum PaymentMethod {
     'COD' = 'cod',
-    'CREDIT_CARD' = 'credit-card',
+    'BANK_TRANSFER' = 'bank_transfer',
 }
 
 export enum OrderState {
@@ -36,9 +36,15 @@ export enum OrderState {
     'CANCELED' = 'canceled',
 }
 
-export interface OrderdItem {
+export interface OrderedItem {
     id: string;
     quantity: number;
     color: Color;
     size: Size;
+}
+
+export interface OrdersState {
+    isOrdersLoading: boolean;
+    orders: Array<Order> | null;
+    error: string;
 }
