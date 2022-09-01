@@ -37,5 +37,6 @@
     "close": "Close",
     "collectionTitle": "Collection title",
     "description": "Description",
-    "requireAProduct": "Please add at least 1 product"
+    "requireAProduct": "Please add at least 1 product",
+    "forgotPassword": "Forgot password"
 }
