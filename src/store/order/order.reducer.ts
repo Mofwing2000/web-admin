@@ -20,7 +20,7 @@ const ordersReducer: Reducer<OrdersState, AnyAction> = createReducer(initState)
     .handleAction(OrderActionType.FETCH_ORDERS_SUCCEED, (state: OrdersState, action: PayloadAction<Order[]>) => ({
         ...state,
         isProductLoading: false,
-        products: action.payload,
+        orders: action.payload,
     }))
     .handleAction(OrderActionType.FETCH_ORDERS_FAILED, (state: OrdersState, action: PayloadAction<string>) => ({
         ...state,
@@ -31,7 +31,7 @@ const ordersReducer: Reducer<OrdersState, AnyAction> = createReducer(initState)
         ...state,
         isProductLoading: false,
         error: '',
-        products: [],
+        orders: [],
     }));
 
 export default ordersReducer;

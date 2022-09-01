@@ -20,7 +20,7 @@ const usersReducer: Reducer<UsersState, AnyAction> = createReducer(initState)
     .handleAction(UserActionType.FETCH_USERS_LIST_SUCCEED, (state: UsersState, action: PayloadAction<User>) => ({
         ...state,
         isUserLoading: false,
-        user: action.payload,
+        users: action.payload,
     }))
     .handleAction(UserActionType.FETCH_USERS_LIST_FAILED, (state: UsersState, action: PayloadAction<string>) => ({
         ...state,
