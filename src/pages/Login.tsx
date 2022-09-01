@@ -1,24 +1,36 @@
 import { yupResolver } from '@hookform/resolvers/yup';
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { useForm } from 'react-hook-form';
-import { Link } from 'react-router-dom';
+import { useTranslation } from 'react-i18next';
+import { Link, useNavigate } from 'react-router-dom';
 import * as yup from 'yup';
-import { useAppDispatch } from '../helpers/hooks';
+import { useAppDispatch, useAppSelector } from '../helpers/hooks';
+import AuthState from '../models/auth';
 import { LoginInput } from '../models/form';
 import { loginAsync } from '../store/auth/auth.action';
-
-const schema = yup
-    .object({
-        email: yup.string().trim().required('This field is required!').email('Please enter a valid email!'),
-        password: yup
-            .string()
-            .trim()
-            .required('This field is required!')
-            .min(8, 'Password must have at least 8 characters!'),
-    })
-    .required();
+import { selectAuth } from '../store/root-reducer';
 
 const Login = () => {
+    const { t } = useTranslation(['common', 'user']);
+    const { userToken } = useAppSelector<AuthState>(selectAuth);
+    const navigate = useNavigate();
+    useEffect(() => {
+        if (userToken) navigate('/');
+    }, [userToken]);
+    const schema = yup
+        .object({
+            email: yup
+                .string()
+                .trim()
+                .required(`${t('common:requiredMessage')}`)
+                .email(`${t('common:validEmail')}`),
+            password: yup
+                .string()
+                .trim()
+                .required(`${t('common:requiredMessage')}`)
+                .min(8, `${t('common:validPasswordLength')}`),
+        })
+        .required();
     const dispatch = useAppDispatch();
     const {
         register,
@@ -57,50 +69,49 @@ const Login = () => {
                     <div className="col-12 col-md-8 col-lg-6 col-xl-5">
                         <div className="card shadow-2-strong">
                             <form className="card-body p-5" onSubmit={handleSubmit(onSubmit)} noValidate>
-                                <h3 className="mb-5 text-center">Sign in</h3>
+                                <h3 className="mb-5 text-center">{t('common:logIn')}</h3>
                                 <div className="form-outline mb-4">
                                     <label className="form-label justify-content-start" htmlFor="typeEmailX-2">
                                         Email
                                     </label>
                                     <input
-                                        defaultValue={formValues.email}
+                                        {...register('email', {
+                                            onChange: handleEmailOnChange,
+                                        })}
+                                        value={formValues.email}
                                         type="email"
                                         id="typeEmailX-2"
                                         className="form-control form-control-lg"
-                                        {...register('email')}
-                                        onChange={handleEmailOnChange}
                                     />
-                                    {errors.email && <p>{errors.email.message}</p>}
+                                    {errors.email && <p className="text-danger">{errors.email.message}</p>}
                                 </div>
 
                                 <div className="form-outline mb-4">
                                     <label className="form-label" htmlFor="typePasswordX-2">
-                                        Password
+                                        {t('user:password')}
                                     </label>
                                     <input
+                                        value={formValues.password}
                                         type="password"
                                         id="typePasswordX-2"
                                         className="form-control form-control-lg"
-                                        {...register('password')}
-                                        onChange={handlePasswordOnChange}
+                                        {...register('password', {
+                                            onChange: handlePasswordOnChange,
+                                        })}
                                     />
-                                    <p>{errors.password?.message}</p>
+                                    <p className="text-danger">{errors.password?.message}</p>
                                 </div>
-
-                                <div className="mb-4">
-                                    <Link className="text-decoration-none text-reset" to={'/signup'}>
-                                        Don&#39;t have an account?
-                                    </Link>
-                                </div>
-
                                 <div className="mb-4 text-center">
                                     <Link className="text-decoration-none text-danger" to={'/forgot-password'}>
-                                        Forgot password?
+                                        {t('common:forgotPassword')}
                                     </Link>
                                 </div>
 
-                                <button className="btn btn-primary btn-lg btn-block text-center" type="submit">
-                                    Login
+                                <button
+                                    className="btn btn-primary btn-lg btn-block text-center d-block mx-auto"
+                                    type="submit"
+                                >
+                                    {t('common:login')}
                                 </button>
                             </form>
                         </div>
