@@ -14,6 +14,7 @@ import { useForm } from 'react-hook-form';
 import { yupResolver } from '@hookform/resolvers/yup';
 import moment from 'moment';
 import { useTranslation } from 'react-i18next';
+import { firebaseDateFormat } from '../../helpers/common';
 
 interface FormValues {
     tracking: string;
@@ -346,17 +347,11 @@ const OrderDetail = () => {
                                 </p>
                                 <p className="mb-1">
                                     <span className="fw-bold">{t('order:shippingDate')}: </span>
-                                    {orderData.shippingDate &&
-                                        moment((orderData.shippingDate as unknown as Timestamp).toDate()).format(
-                                            'dddd, MMMM Do YYYY, h:mm:ss a',
-                                        )}
+                                    {orderData.shippingDate && firebaseDateFormat(orderData.shippingDate)}
                                 </p>
                                 <p className="mb-1">
                                     <span className="fw-bold">{t('order:receivingDate')}: </span>
-                                    {orderData.receivingDate &&
-                                        moment((orderData.receivingDate as unknown as Timestamp).toDate()).format(
-                                            'dddd, MMMM Do YYYY, h:mm:ss a',
-                                        )}
+                                    {orderData.receivingDate && firebaseDateFormat(orderData.receivingDate)}
                                 </p>
                                 <p className="mb-1">
                                     <span className="fw-bold">{t('order:note')}: </span>
