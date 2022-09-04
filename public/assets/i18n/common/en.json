@@ -38,5 +38,7 @@
     "collectionTitle": "Collection title",
     "description": "Description",
     "requireAProduct": "Please add at least 1 product",
-    "forgotPassword": "Forgot password"
+    "forgotPassword": "Forgot password",
+    "actionConfirm": "Confirm this action",
+    "confirmActionQuest": "Do you want to continue?"
 }

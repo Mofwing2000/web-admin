@@ -38,5 +38,7 @@
     "collectionTitle": "Tiêu đề bộ sưu tập",
     "description": "Mô tả",
     "requireAProduct": "Vui lòng thêm ít nhất 1 sản phẩm",
-    "forgotPassword": "Quên mật khẩu"
+    "forgotPassword": "Quên mật khẩu",
+    "actionConfirm": "Xác nhận hành động",
+    "confirmActionQuest": "Bạn vẫn muốn tiếp tục?"
 }
