@@ -1,0 +1,5 @@
+Admin:
++ Hủy đơn không hoàn lại số lượng(đã fix) 
++ Thiếu quản lý collection (mới chỉ có add) (đã fix)
++ Thiếu thanh search ở trang quản lý sp (đã fix)
++ Chưa useCallback useMemo (đã fix)
