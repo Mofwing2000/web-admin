@@ -16,7 +16,7 @@ i18n.use(Backend)
         debug: false,
         // can have multiple namespaces, in case you want to divide a huge
         // translation into smaller pieces and load them on demand
-        ns: ['common', 'home', 'profile', 'sidebar', 'dashboard', 'product', 'user', 'order'],
+        ns: ['common', 'home', 'profile', 'sidebar', 'dashboard', 'product', 'user', 'order', 'collection'],
 
         interpolation: {
             espaceValue: false,

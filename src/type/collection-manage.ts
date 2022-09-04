@@ -1,4 +1,4 @@
 export enum CollectionAction {
-    'ADD' = 'add-collection',
-    'UPDATE' = 'update-collection',
+    'ADD' = 'add',
+    'UPDATE' = 'update',
 }

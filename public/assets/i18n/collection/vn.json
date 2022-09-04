@@ -1,0 +1,8 @@
+{
+    "collection": "Bộ sưu tập",
+    "name": "Tên",
+    "createdAt": "Ngày tạo",
+    "quantity": "Số lượng",
+    "action": "Hành động",
+    "addCollection": "Thêm bộ sưu tập"
+}

@@ -20,6 +20,7 @@ import LoadingModal from '../../components/loading-modal/LoadingModal';
 import { useAppDispatch, useAppSelector } from '../../helpers/hooks';
 import { selectProduct } from '../../store/product/product.reducer';
 import { fetchProductsAsync } from '../../store/product/product.action';
+import { addCollectionAsync, updateColllectionAsync } from '../../store/collection/collection.action';
 
 interface IProps {
     action: CollectionAction;
@@ -89,7 +90,7 @@ const CollectionManagePanel: FC<IProps> = (props) => {
 
     const collectionProductValue = useMemo(() => {
         if (products) return products.filter((product) => collectionValue.productsList.includes(product.id));
-    }, [collectionValue.productsList]);
+    }, [collectionValue.productsList, products]);
 
     const handleTitleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         setCollectionValue({
@@ -111,9 +112,7 @@ const CollectionManagePanel: FC<IProps> = (props) => {
 
     const handleProductToggle = (product: Top | Bottom) => {
         if (collectionValue.productsList?.includes(product.id)) {
-            const index = collectionValue.productsList.findIndex(
-                (element) => JSON.stringify(element) === JSON.stringify(product),
-            );
+            const index = collectionValue.productsList.findIndex((element) => element === product.id);
             const newArr = [...collectionValue.productsList];
             newArr.splice(index, 1);
             if (index != -1) setCollectionValue({ ...collectionValue, productsList: [...newArr] });
@@ -167,14 +166,22 @@ const CollectionManagePanel: FC<IProps> = (props) => {
     const addCollection = async () => {
         try {
             const id = cuid();
-            await setDoc(doc(db, 'collection', id), {
-                ...collectionValue,
-                id: id,
-                description: collectionValue.description.replace('\\n', '\n'),
-                createdAt: new Date(Date.now()),
-            });
+            dispatch(
+                addCollectionAsync.request({
+                    ...collectionValue,
+                    id: id,
+                    description: collectionValue.description.replace('\\n', '\n'),
+                    createdAt: new Date(Date.now()),
+                }),
+            );
+            // await setDoc(doc(db, 'collection', id), {
+            //     ...collectionValue,
+            //     id: id,
+            //     description: collectionValue.description.replace('\\n', '\n'),
+            //     createdAt: new Date(Date.now()),
+            // });
             setIsLoading(false);
-            toast.success(`${t('common:updateCollectionSucceed')}`);
+            toast.success(`${t('common:addCollectionSucceed')}`);
             setBanner(undefined);
             setCollectionValue({ ...defaultCollection });
             reset({ ...defaultFormValue });
@@ -186,16 +193,13 @@ const CollectionManagePanel: FC<IProps> = (props) => {
     };
 
     const updateCollection = async () => {
-        try {
-            await updateDoc(doc(db, 'collection', data!.id), {
+        dispatch(
+            updateColllectionAsync.request({
                 ...collectionValue,
-            });
-            setIsLoading(false);
-            toast.success(`${t('common:updateCollectionSucceed')}`);
-        } catch (error) {
-            setIsLoading(false);
-            if (error instanceof FirebaseError) toast(error.message);
-        }
+            }),
+        );
+        setIsLoading(false);
+        toast.success(`${t('common:updateCollectionSucceed')}`);
     };
 
     const onSubmit = async () => {
@@ -349,53 +353,55 @@ const CollectionManagePanel: FC<IProps> = (props) => {
                                     </tr>
                                 </thead>
                                 <tbody>
-                                    {collectionProductValue &&
-                                        collectionProductValue.map((product, index) => (
-                                            <tr key={index} className="d-flex">
-                                                <td className="collection__products__table__img-container col-2 d-inline-block text-truncate">
-                                                    <div
-                                                        className="collection__products__table__img-container__content"
-                                                        style={{ backgroundImage: `url(${product.photoUrls[0]})` }}
-                                                    ></div>
-                                                </td>
-                                                <td className={` col-8 d-inline-block text-truncate`}>
-                                                    <span
-                                                        data-tip
-                                                        data-for={product.id + 'name'}
-                                                        onMouseEnter={() => setTooltip(true)}
-                                                        onMouseLeave={() => setTooltip(false)}
-                                                    >
-                                                        {product.name}
-                                                    </span>
-                                                    {tooltip && (
-                                                        <ReactTooltip id={product.id + 'name'} effect="float">
-                                                            <span>{product.name}</span>
-                                                        </ReactTooltip>
-                                                    )}
-                                                </td>
-                                                <td className="col-2 d-inline-block text-truncate">
-                                                    <div className="d-flex  align-items-center gap-2">
-                                                        <button
-                                                            className="btn btn-primary"
-                                                            onClick={() => handleView(product)}
+                                    {useMemo(() => {
+                                        if (collectionProductValue && collectionProductValue?.length)
+                                            return collectionProductValue.map((product, index) => (
+                                                <tr key={index} className="d-flex">
+                                                    <td className="collection__products__table__img-container col-2 d-inline-block text-truncate">
+                                                        <div
+                                                            className="collection__products__table__img-container__content"
+                                                            style={{ backgroundImage: `url(${product.photoUrls[0]})` }}
+                                                        ></div>
+                                                    </td>
+                                                    <td className={` col-8 d-inline-block text-truncate`}>
+                                                        <span
+                                                            data-tip
+                                                            data-for={product.id + 'name'}
+                                                            onMouseEnter={() => setTooltip(true)}
+                                                            onMouseLeave={() => setTooltip(false)}
                                                         >
-                                                            {t('common:view')}
-                                                        </button>
-                                                        <button
-                                                            type="button"
-                                                            className="btn btn-danger"
-                                                            data-bs-toggle="modal"
-                                                            data-bs-target="#confirmModal"
-                                                            onClick={() => {
-                                                                setEditingItem(product);
-                                                            }}
-                                                        >
-                                                            {t('common:delete')}
-                                                        </button>
-                                                    </div>
-                                                </td>
-                                            </tr>
-                                        ))}
+                                                            {product.name}
+                                                        </span>
+                                                        {tooltip && (
+                                                            <ReactTooltip id={product.id + 'name'} effect="float">
+                                                                <span>{product.name}</span>
+                                                            </ReactTooltip>
+                                                        )}
+                                                    </td>
+                                                    <td className="col-2 d-inline-block text-truncate">
+                                                        <div className="d-flex  align-items-center gap-2">
+                                                            <button
+                                                                className="btn btn-primary"
+                                                                onClick={() => handleView(product)}
+                                                            >
+                                                                {t('common:view')}
+                                                            </button>
+                                                            <button
+                                                                type="button"
+                                                                className="btn btn-danger"
+                                                                data-bs-toggle="modal"
+                                                                data-bs-target="#collectionPanelconfirmModal"
+                                                                onClick={() => {
+                                                                    setEditingItem(product);
+                                                                }}
+                                                            >
+                                                                {t('common:delete')}
+                                                            </button>
+                                                        </div>
+                                                    </td>
+                                                </tr>
+                                            ));
+                                    }, [collectionProductValue])}
                                 </tbody>
                             </table>
                         </div>
@@ -418,7 +424,7 @@ const CollectionManagePanel: FC<IProps> = (props) => {
                         </button>
                     </div>
                 </form>
-                <div className="modal" id="confirmModal">
+                <div className="modal" id="collectionPanelconfirmModal">
                     <div className="modal-dialog modal-dialog-centered">
                         <div className="modal-content">
                             <div className="modal-header">

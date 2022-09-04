@@ -25,6 +25,8 @@ import CollectionManagePanel from './container/collection-manage-panel/Collectio
 import { CollectionAction } from './type/collection-manage';
 import CollectionView from './container/collection-view/CollectionView';
 import ForgotPassword from './container/ForgotPassword';
+import CollectionManage from './container/collection-manage/CollectionManage';
+import CollectionEdit from './container/collection-edit/CollectionEdit';
 
 function App() {
     const { mode } = useAppSelector<any>(selectDarkMode) as DisplayModeState;
@@ -92,7 +94,8 @@ function App() {
                             <Route path="detail/:orderId" element={<OrderDetail />}></Route>
                         </Route>
                         <Route path="collection">
-                            <Route index element={<CollectionManagePanel action={CollectionAction.ADD} />}></Route>
+                            <Route index element={<CollectionManage />}></Route>
+                            <Route path="edit/:collectionId" element={<CollectionEdit />}></Route>
                             <Route path="view/:collectionId" element={<CollectionView />}></Route>
                         </Route>
                     </Route>

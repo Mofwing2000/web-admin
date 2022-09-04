@@ -1,0 +1,8 @@
+{
+    "collection": "Collection",
+    "name": "Name",
+    "createdAt": "Created at",
+    "quantity": "Quantity",
+    "action": "Action",
+    "addCollection": "Add collection"
+}
