@@ -1,0 +1,45 @@
+@use '../../sass/style.scss' as *;
+.product-item {
+    overflow: hidden;
+    &__pic {
+        // box-shadow: $box-shadow;
+        &__photo {
+            width: 100%;
+            height: auto;
+        }
+    }
+    &__content {
+        padding-top: 20px;
+        position: relative;
+        &__text {
+            font-weight: 700;
+        }
+        &__name {
+            opacity: 1;
+            visibility: visible;
+            transition: all 0.3s 0s ease;
+
+            &:hover {
+                color: $primary-color;
+            }
+        }
+
+        &__color {
+            opacity: 0;
+            visibility: hidden;
+            transition: all 0.3s 0s ease;
+            &__item {
+                display: inline-block;
+                font-size: 12px;
+            }
+            &__item ~ &__item {
+                margin-left: 4px;
+            }
+        }
+    }
+    &:hover &__content__color {
+        opacity: 1;
+        visibility: visible;
+        transition: all 0.5s 0s ease;
+    }
+}
