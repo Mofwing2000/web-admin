@@ -1,0 +1,29 @@
+@use './variable' as *;
+.cursor-primary {
+    transition: color 0.3s 0s ease;
+
+    cursor: pointer;
+    &:hover {
+        color: $primary-color;
+    }
+}
+
+.cursor {
+    cursor: pointer;
+}
+
+.empty-content-container {
+    height: 500px;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+}
+
+.square-div-with-background {
+    width: 100%;
+    padding-bottom: 100%;
+    background-repeat: no-repeat;
+    background-size: cover;
+    background-position: center;
+}
