@@ -137,7 +137,7 @@ const ProductProfile = () => {
                             <div className="product-profile__main__info__description">
                                 <pre>
                                     <span className="product-profile__main__info__description__label">
-                                        {t('product:description')}:
+                                        {t('common:description')}:
                                     </span>
                                     <br />
                                     {productData.description}
