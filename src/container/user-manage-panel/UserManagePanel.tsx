@@ -4,7 +4,7 @@ import cuid from 'cuid';
 import { createUserWithEmailAndPassword } from 'firebase/auth';
 import { doc, setDoc, updateDoc } from 'firebase/firestore';
 import { getDownloadURL, ref, uploadBytesResumable } from 'firebase/storage';
-import React, { useEffect, useState } from 'react';
+import React, { useCallback, useEffect, useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { useTranslation } from 'react-i18next';
 import { useNavigate } from 'react-router-dom';
@@ -113,59 +113,73 @@ const UserManagePanel = (props: IProps) => {
     });
     const [userFormValue, setUserFormValue] = useState<User>(user);
 
-    function isFileImage(file: File) {
+    const isFileImage = useCallback((file: File) => {
         return file && file.type.split('/')[0] === 'image';
-    }
-    const handleEmailChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-        setUserFormValue({
-            ...userFormValue,
-            email: e.target.value,
+    }, []);
+    const handleEmailChange = useCallback((e: React.ChangeEvent<HTMLInputElement>) => {
+        setUserFormValue((prev) => {
+            return {
+                ...prev,
+                email: e.target.value,
+            };
         });
-    };
+    }, []);
 
-    const handlePasswordChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-        setUserFormValue({
-            ...userFormValue,
-            password: e.target.value,
+    const handlePasswordChange = useCallback((e: React.ChangeEvent<HTMLInputElement>) => {
+        setUserFormValue((prev) => {
+            return {
+                ...prev,
+                password: e.target.value,
+            };
         });
-    };
+    }, []);
 
-    const handleFirstNameChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-        setUserFormValue({
-            ...userFormValue,
-            firstName: e.target.value,
+    const handleFirstNameChange = useCallback((e: React.ChangeEvent<HTMLInputElement>) => {
+        setUserFormValue((prev) => {
+            return {
+                ...prev,
+                firstName: e.target.value,
+            };
         });
-    };
+    }, []);
 
-    const handleLastNameChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-        setUserFormValue({
-            ...userFormValue,
-            lastName: e.target.value,
+    const handleLastNameChange = useCallback((e: React.ChangeEvent<HTMLInputElement>) => {
+        setUserFormValue((prev) => {
+            return {
+                ...prev,
+                lastName: e.target.value,
+            };
         });
-    };
+    }, []);
 
-    const handlePhoneNumberChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-        setUserFormValue({
-            ...userFormValue,
-            phoneNumber: e.target.value,
+    const handlePhoneNumberChange = useCallback((e: React.ChangeEvent<HTMLInputElement>) => {
+        setUserFormValue((prev) => {
+            return {
+                ...prev,
+                phoneNumber: e.target.value,
+            };
         });
-    };
+    }, []);
 
-    const handleAddressChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-        setUserFormValue({
-            ...userFormValue,
-            address: e.target.value,
+    const handleAddressChange = useCallback((e: React.ChangeEvent<HTMLInputElement>) => {
+        setUserFormValue((prev) => {
+            return {
+                ...prev,
+                address: e.target.value,
+            };
         });
-    };
+    }, []);
 
-    const handleRoleChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
-        setUserFormValue({
-            ...userFormValue,
-            role: e.target.value === 'customer' ? 'customer' : e.target.value === 'staff' ? 'staff' : 'admin',
+    const handleRoleChange = useCallback((e: React.ChangeEvent<HTMLSelectElement>) => {
+        setUserFormValue((prev) => {
+            return {
+                ...prev,
+                role: e.target.value === 'customer' ? 'customer' : e.target.value === 'staff' ? 'staff' : 'admin',
+            };
         });
-    };
+    }, []);
 
-    const uploadAvatar = async () => {
+    const uploadAvatar = useCallback(async () => {
         if (avatar) {
             setIsLoading(true);
             const avatarFileName = cuid() + avatar.name;
@@ -191,9 +205,9 @@ const UserManagePanel = (props: IProps) => {
                 },
             );
         }
-    };
+    }, [avatar]);
 
-    const addUser = async () => {
+    const addUser = useCallback(async () => {
         const result = await createUserWithEmailAndPassword(auth, userFormValue.email, userFormValue.password);
         dispatch(
             addUsersAsync.request({
@@ -204,39 +218,39 @@ const UserManagePanel = (props: IProps) => {
         setAvatar(undefined);
         setUserFormValue({ ...defaultUser });
         reset({ ...defaultFormValue });
-    };
+    }, [userFormValue]);
 
     // useEffect(() => {
     //     setUserFormValue({ ...user });
     // }, [props]);
 
-    const updateUser = async () => {
+    const updateUser = useCallback(async () => {
+        console.log(userFormValue);
+
         dispatch(
             updateUsersAsync.request({
                 ...userFormValue,
             }),
         );
-    };
-    const onSubmit = async () => {
+    }, [userFormValue]);
+    const onSubmit = useCallback(async () => {
         setIsLoading(true);
         if (props.type === 'add') {
             await addUser();
+            toast.success('common:addUserSucceed');
             setIsLoading(false);
+            navigate('/user');
         } else if (props.type === 'update') {
             await updateUser();
+            toast.success('common:updateUserSucceed');
             setIsLoading(false);
+            navigate('/user');
         }
-    };
+    }, [props.type, userFormValue]);
 
     useEffect(() => {
         uploadAvatar();
     }, [avatar]);
-
-    // useEffect(() => {
-    //     if (formState.isSubmitSuccessful) {
-    //         reset({ ...user });
-    //     }
-    // }, [formState, userFormValue, reset]);
 
     return (
         <>

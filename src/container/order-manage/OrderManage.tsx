@@ -1,5 +1,5 @@
 import { collection, DocumentData, orderBy, query, QueryDocumentSnapshot } from 'firebase/firestore';
-import React, { useEffect, useState } from 'react';
+import React, { memo, useCallback, useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import LoadingModal from '../../components/loading-modal/LoadingModal';
 import OrderFilterBar from '../../components/order-filter-bar/OrderFilterBar';
@@ -23,12 +23,15 @@ const OrderManage = () => {
     const [currentFilteredOrder, setCurrentFilteredOrder] = useState<Order[]>([]);
     const dispatch = useAppDispatch();
 
-    const handlePageClick = (event: { selected: number }) => {
-        if (orders) {
-            const newOffset = (event.selected * pageSize) % orders.length;
-            setItemOffset(newOffset);
-        }
-    };
+    const handlePageClick = useCallback(
+        (event: { selected: number }) => {
+            if (orders) {
+                const newOffset = (event.selected * pageSize) % orders.length;
+                setItemOffset(newOffset);
+            }
+        },
+        [orders],
+    );
 
     useEffect(() => {
         if (orders) {
@@ -79,4 +82,4 @@ const OrderManage = () => {
     );
 };
 
-export default OrderManage;
+export default memo(OrderManage);

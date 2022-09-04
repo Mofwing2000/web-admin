@@ -1,5 +1,5 @@
 import { yupResolver } from '@hookform/resolvers/yup';
-import React, { FC, useEffect, useMemo, useState } from 'react';
+import React, { FC, useCallback, useEffect, useMemo, useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { ref, uploadBytesResumable, getDownloadURL } from 'firebase/storage';
 import auth, { storage, db } from '../../config/firebase.config';
@@ -170,91 +170,112 @@ const ProductManagePanel: FC<IProps> = (props) => {
     });
     const [productFormValue, setProductFormValue] = useState<Top | Bottom>(product);
 
-    function isFileImage(file: File) {
+    const isFileImage = useCallback((file: File) => {
         return file && file.type.split('/')[0] === 'image';
-    }
+    }, []);
 
-    const handleProductPhotoClick = (e: React.MouseEvent<HTMLInputElement, MouseEvent>) => {
-        if (productFormValue.photoUrls.length > 8) {
-            e.preventDefault();
-            toast.warn('Photos reached limit!');
-        }
-    };
-    console.log(productFormValue);
+    const handleProductPhotoClick = useCallback(
+        (e: React.MouseEvent<HTMLInputElement, MouseEvent>) => {
+            if (productFormValue.photoUrls.length > 8) {
+                e.preventDefault();
+                toast.warn('Photos reached limit!');
+            }
+        },
+        [productFormValue],
+    );
 
-    const handleProductPhotoChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const handleProductPhotoChange = useCallback((e: React.ChangeEvent<HTMLInputElement>) => {
         if (isFileImage(e.target.files![0])) setProductPhoto(e.target.files![0]);
-    };
+    }, []);
 
-    const handleNameChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-        setProductFormValue({
-            ...productFormValue,
-            name: e.target.value,
+    const handleNameChange = useCallback((e: React.ChangeEvent<HTMLInputElement>) => {
+        setProductFormValue((prev) => {
+            return {
+                ...prev,
+                name: e.target.value,
+            };
         });
-    };
+    }, []);
 
-    const handlePriceChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-        setProductFormValue({
-            ...productFormValue,
-            price: +e.target.value,
+    const handlePriceChange = useCallback((e: React.ChangeEvent<HTMLInputElement>) => {
+        setProductFormValue((prev) => {
+            return {
+                ...prev,
+                price: +e.target.value,
+            };
         });
-    };
+    }, []);
 
-    const handleQuantityChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-        setProductFormValue({
-            ...productFormValue,
-            quantity: +e.target.value,
+    const handleQuantityChange = useCallback((e: React.ChangeEvent<HTMLInputElement>) => {
+        setProductFormValue((prev) => {
+            return {
+                ...prev,
+                quantity: +e.target.value,
+            };
         });
-    };
+    }, []);
 
-    const handleSizeChange = (index: number) => {
+    const handleSizeChange = useCallback((index: number) => {
         const tempProd = { ...productFormValue };
         const newSizeArr = tempProd.size;
         newSizeArr[index].isAvailable = !newSizeArr[index].isAvailable;
-        setProductFormValue({
-            ...productFormValue,
-            size: [...newSizeArr],
+        setProductFormValue((prev) => {
+            return {
+                ...prev,
+                size: [...newSizeArr],
+            };
         });
-    };
+    }, []);
 
-    const handleColorChange = (index: number) => {
+    const handleColorChange = useCallback((index: number) => {
         const tempProd = { ...productFormValue };
         const newSizeArr = tempProd.color;
         newSizeArr[index].isAvailable = !newSizeArr[index].isAvailable;
-        setProductFormValue({
-            ...productFormValue,
-            color: [...newSizeArr],
+        setProductFormValue((prev) => {
+            return {
+                ...prev,
+                color: [...newSizeArr],
+            };
         });
-    };
+    }, []);
 
-    const handleDescriptionChange = (e: React.ChangeEvent<HTMLTextAreaElement>) => [
-        setProductFormValue({
-            ...productFormValue,
-            description: e.target.value,
-        }),
-    ];
+    const handleDescriptionChange = useCallback((e: React.ChangeEvent<HTMLTextAreaElement>) => {
+        setProductFormValue((prev) => {
+            return {
+                ...prev,
+                description: e.target.value,
+            };
+        });
+    }, []);
 
-    const handleCategoryChange = (index: number) => {
-        if (product.productType === ProductType.TOP) {
-            const tempProd = { ...productFormValue } as Top;
-            const newSizeArr = tempProd.category;
-            newSizeArr[index].isCategory = !newSizeArr[index].isCategory;
-            setProductFormValue({
-                ...productFormValue,
-                category: [...newSizeArr],
-            });
-        } else {
-            const tempProd = { ...productFormValue } as Bottom;
-            const newSizeArr = tempProd.category;
-            newSizeArr[index].isCategory = !newSizeArr[index].isCategory;
-            setProductFormValue({
-                ...productFormValue,
-                category: [...newSizeArr],
-            });
-        }
-    };
+    const handleCategoryChange = useCallback(
+        (index: number) => {
+            if (product.productType === ProductType.TOP) {
+                const tempProd = { ...productFormValue } as Top;
+                const newSizeArr = tempProd.category;
+                newSizeArr[index].isCategory = !newSizeArr[index].isCategory;
+                setProductFormValue((prev) => {
+                    return {
+                        ...prev,
+                        category: [...newSizeArr],
+                    };
+                });
+            } else {
+                const tempProd = { ...productFormValue } as Bottom;
+                const newSizeArr = tempProd.category;
+                newSizeArr[index].isCategory = !newSizeArr[index].isCategory;
+                setProductFormValue((prev) => {
+                    return {
+                        ...prev,
+                        category: [...newSizeArr],
+                    };
+                });
+            }
+        },
+        [product],
+    );
 
-    const uploadproductPhoto = async () => {
+    const uploadproductPhoto = useCallback(async () => {
         if (productPhoto) {
             setIsLoading(true);
             const productPhotoFileName = cuid() + productPhoto.name;
@@ -281,18 +302,18 @@ const ProductManagePanel: FC<IProps> = (props) => {
                 },
             );
         }
-    };
+    }, [productPhoto]);
 
-    const updateProduct = async () => {
+    const updateProduct = useCallback(async () => {
         dispatch(
             updateProductAsync.request({
                 ...productFormValue,
                 updatedAt: new Date(Date.now()),
             }),
         );
-    };
+    }, [productFormValue]);
 
-    const addProduct = async () => {
+    const addProduct = useCallback(async () => {
         const id = cuid();
         dispatch(
             addProductAsync.request({
@@ -307,9 +328,9 @@ const ProductManagePanel: FC<IProps> = (props) => {
         if (props.type === 'add-top') setProductFormValue({ ...defaultTop });
         else if (props.type === 'add-bottom') setProductFormValue({ ...defaultBottom });
         reset({ ...defaultFormValue });
-    };
+    }, [productFormValue]);
 
-    const onSubmit = async () => {
+    const onSubmit = useCallback(async () => {
         setIsLoading(true);
         if (productFormValue.photoUrls.length < 1) {
             toast.error(`${t('common:requireAPhoto')}`);
@@ -325,7 +346,7 @@ const ProductManagePanel: FC<IProps> = (props) => {
             setIsLoading(false);
             navigate(-1);
         }
-    };
+    }, [productFormValue]);
 
     useEffect(() => {
         uploadproductPhoto();
@@ -344,32 +365,36 @@ const ProductManagePanel: FC<IProps> = (props) => {
                             ></div>
                         </div>
                         <div className="manage-product__form__upload__gallery__grid col-6 row position-relative">
-                            {productFormValue.photoUrls &&
-                                productFormValue.photoUrls.map((item, index) => (
-                                    <div id={`${index}`} key={index} className="col-4 ">
-                                        <div
-                                            className="manage-product__form__upload__gallery__grid__item position-relative"
-                                            style={{
-                                                backgroundImage: `url(${item})`,
-                                            }}
-                                        >
-                                            <i
-                                                className="manage-product__form__upload__gallery__grid__item__close fa-solid fa-xmark position-absolute top-0 end-0 fs-5 text-danger"
-                                                onClick={() => {
-                                                    console.log(index);
-                                                    const splicedArr = [...productFormValue.photoUrls];
-                                                    splicedArr.splice(index, 1);
-                                                    setProductFormValue((prev) => {
-                                                        return {
-                                                            ...prev,
-                                                            photoUrls: [...splicedArr],
-                                                        };
-                                                    });
+                            {useMemo(
+                                () =>
+                                    productFormValue.photoUrls &&
+                                    productFormValue.photoUrls.map((item, index) => (
+                                        <div id={`${index}`} key={index} className="col-4 ">
+                                            <div
+                                                className="manage-product__form__upload__gallery__grid__item position-relative"
+                                                style={{
+                                                    backgroundImage: `url(${item})`,
                                                 }}
-                                            ></i>
+                                            >
+                                                <i
+                                                    className="manage-product__form__upload__gallery__grid__item__close fa-solid fa-xmark position-absolute top-0 end-0 fs-5 text-danger"
+                                                    onClick={() => {
+                                                        console.log(index);
+                                                        const splicedArr = [...productFormValue.photoUrls];
+                                                        splicedArr.splice(index, 1);
+                                                        setProductFormValue((prev) => {
+                                                            return {
+                                                                ...prev,
+                                                                photoUrls: [...splicedArr],
+                                                            };
+                                                        });
+                                                    }}
+                                                ></i>
+                                            </div>
                                         </div>
-                                    </div>
-                                ))}
+                                    )),
+                                [productFormValue.photoUrls],
+                            )}
                         </div>
                     </div>
                     <div className="manage-product__form__upload__control mx-auto mt-4">

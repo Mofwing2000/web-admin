@@ -29,9 +29,9 @@ const CollectionManage = () => {
     const [editingItem, setEditingItem] = useState<null | string>(null);
     const [isEditing, setIsEditing] = useState<Boolean>(false);
 
-    const handleView = (data: Collection) => {
+    const handleView = useCallback((data: Collection) => {
         navigate(`/collection/view/${data.id}`);
-    };
+    }, []);
 
     const handleCollectionDelete = useCallback(async () => {
         console.log('delete');
@@ -48,9 +48,6 @@ const CollectionManage = () => {
         dispatch(fetchColllectionsAsync.request(collectionQuery));
     }, []);
 
-    console.log(editingItem);
-
-    // if (collections) console.log(collections);
     return (
         <>
             {collections ? (
@@ -100,91 +97,110 @@ const CollectionManage = () => {
                                 </tr>
                             </thead>
                             <tbody className="collection-manage__table__body">
-                                {collections &&
-                                    collections!.map((colletionData, index) => (
-                                        <tr className="collection-manage__table__body d-flex" key={index}>
-                                            <td className="collection-manage__table__body__data col-2 d-inlne-block text-truncate">
-                                                <div
-                                                    className="collection-manage__table__body__data__img"
-                                                    style={{
-                                                        backgroundImage: `url(${colletionData.collectionBanner})`,
-                                                    }}
-                                                ></div>
-                                            </td>
-                                            <td className="product-manage__table__body__data col-5 d-inline-block text-truncate">
-                                                <span
-                                                    data-tip
-                                                    data-for={colletionData.id + 'name'}
-                                                    onMouseEnter={() => setTooltip(true)}
-                                                    onMouseLeave={() => setTooltip(false)}
-                                                >
-                                                    {colletionData.title}
-                                                </span>
-                                                {tooltip && (
-                                                    <ReactTooltip id={colletionData.id + 'name'} effect="float">
-                                                        <span>{colletionData.description}</span>
-                                                    </ReactTooltip>
-                                                )}
-                                            </td>
-                                            <td className="product-manage__table__body__data col-2 d-inline-block text-truncate">
-                                                <span
-                                                    data-tip
-                                                    data-for={colletionData.id + 'createdAt'}
-                                                    onMouseEnter={() => setTooltip(true)}
-                                                    onMouseLeave={() => setTooltip(false)}
-                                                >
-                                                    {firebaseDateFormatDateOnly(colletionData.createdAt)}
-                                                </span>
-                                                {tooltip && (
-                                                    <ReactTooltip id={colletionData.id + 'createdAt'} effect="float">
-                                                        <span>
-                                                            {firebaseDateFormatDateOnly(colletionData.createdAt)}
-                                                        </span>
-                                                    </ReactTooltip>
-                                                )}
-                                            </td>
-                                            <td className="product-manage__table__body__data col-1 d-inline-block text-truncate">
-                                                <span
-                                                    data-tip
-                                                    data-for={colletionData.id + 'quantity'}
-                                                    onMouseEnter={() => setTooltip(true)}
-                                                    onMouseLeave={() => setTooltip(false)}
-                                                >
-                                                    {colletionData.productsList.length}
-                                                </span>
-                                                {tooltip && (
-                                                    <ReactTooltip id={colletionData.id + 'quantity'} effect="float">
-                                                        <span>{colletionData.productsList.length}</span>
-                                                    </ReactTooltip>
-                                                )}
-                                            </td>
-                                            <td className="product-manage__table__body__data col-2 d-inline-block text-truncate">
-                                                <div>
-                                                    <button
-                                                        className="btn btn-primary"
-                                                        onClick={() => handleView(colletionData)}
-                                                    >
-                                                        {t('common:view')}
-                                                    </button>
-                                                    <button
-                                                        type="button"
-                                                        className="btn btn-danger"
-                                                        data-bs-toggle="modal"
-                                                        data-bs-target="#confirmModal"
-                                                        onClick={() => {
-                                                            setEditingItem(colletionData.id);
-                                                        }}
-                                                    >
-                                                        {t('common:delete')}
-                                                    </button>
-                                                </div>
-                                            </td>
-                                        </tr>
-                                    ))}
+                                {useMemo(() => {
+                                    if (collections) {
+                                        // return <div></div>
+                                        return (
+                                            <>
+                                                {collections!.map((colletionData, index) => (
+                                                    <tr className="collection-manage__table__body d-flex" key={index}>
+                                                        <td className="collection-manage__table__body__data col-2 d-inlne-block text-truncate">
+                                                            <div
+                                                                className="collection-manage__table__body__data__img"
+                                                                style={{
+                                                                    backgroundImage: `url(${colletionData.collectionBanner})`,
+                                                                }}
+                                                            ></div>
+                                                        </td>
+                                                        <td className="product-manage__table__body__data col-5 d-inline-block text-truncate">
+                                                            <span
+                                                                data-tip
+                                                                data-for={colletionData.id + 'name'}
+                                                                onMouseEnter={() => setTooltip(true)}
+                                                                onMouseLeave={() => setTooltip(false)}
+                                                            >
+                                                                {colletionData.title}
+                                                            </span>
+                                                            {tooltip && (
+                                                                <ReactTooltip
+                                                                    id={colletionData.id + 'name'}
+                                                                    effect="float"
+                                                                >
+                                                                    <span>{colletionData.description}</span>
+                                                                </ReactTooltip>
+                                                            )}
+                                                        </td>
+                                                        <td className="product-manage__table__body__data col-2 d-inline-block text-truncate">
+                                                            <span
+                                                                data-tip
+                                                                data-for={colletionData.id + 'createdAt'}
+                                                                onMouseEnter={() => setTooltip(true)}
+                                                                onMouseLeave={() => setTooltip(false)}
+                                                            >
+                                                                {firebaseDateFormatDateOnly(colletionData.createdAt)}
+                                                            </span>
+                                                            {tooltip && (
+                                                                <ReactTooltip
+                                                                    id={colletionData.id + 'createdAt'}
+                                                                    effect="float"
+                                                                >
+                                                                    <span>
+                                                                        {firebaseDateFormatDateOnly(
+                                                                            colletionData.createdAt,
+                                                                        )}
+                                                                    </span>
+                                                                </ReactTooltip>
+                                                            )}
+                                                        </td>
+                                                        <td className="product-manage__table__body__data col-1 d-inline-block text-truncate">
+                                                            <span
+                                                                data-tip
+                                                                data-for={colletionData.id + 'quantity'}
+                                                                onMouseEnter={() => setTooltip(true)}
+                                                                onMouseLeave={() => setTooltip(false)}
+                                                            >
+                                                                {colletionData.productsList.length}
+                                                            </span>
+                                                            {tooltip && (
+                                                                <ReactTooltip
+                                                                    id={colletionData.id + 'quantity'}
+                                                                    effect="float"
+                                                                >
+                                                                    <span>{colletionData.productsList.length}</span>
+                                                                </ReactTooltip>
+                                                            )}
+                                                        </td>
+                                                        <td className="product-manage__table__body__data col-2 d-inline-block text-truncate">
+                                                            <div>
+                                                                <button
+                                                                    className="btn btn-primary"
+                                                                    onClick={() => handleView(colletionData)}
+                                                                >
+                                                                    {t('common:view')}
+                                                                </button>
+                                                                <button
+                                                                    type="button"
+                                                                    className="btn btn-danger"
+                                                                    data-bs-toggle="modal"
+                                                                    data-bs-target="#confirmModal"
+                                                                    onClick={() => {
+                                                                        setEditingItem(colletionData.id);
+                                                                    }}
+                                                                >
+                                                                    {t('common:delete')}
+                                                                </button>
+                                                            </div>
+                                                        </td>
+                                                    </tr>
+                                                ))}
+                                            </>
+                                        );
+                                    }
+                                }, [collections])}
                             </tbody>
                         </table>
                     </div>
-                    {
+                    <>
                         <div className="modal" id="confirmModal">
                             <div className="modal-dialog modal-dialog-centered">
                                 <div className="modal-content">
@@ -218,7 +234,7 @@ const CollectionManage = () => {
                                 </div>
                             </div>
                         </div>
-                    }
+                    </>
                 </div>
             ) : (
                 !isCollectionLoading && (

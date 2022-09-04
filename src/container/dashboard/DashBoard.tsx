@@ -1,6 +1,6 @@
 import { FirebaseError } from '@firebase/util';
 import { collection, getDocs, onSnapshot, query, Timestamp } from 'firebase/firestore';
-import React, { useEffect, useState, useMemo } from 'react';
+import React, { useEffect, useState, useMemo, useCallback, memo } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { toast } from 'react-toastify';
 import { db } from '../../config/firebase.config';
@@ -28,23 +28,23 @@ const DashBoard = () => {
     const { t } = useTranslation(['dashBoard']);
     const navigate = useNavigate();
     const dispatch = useAppDispatch();
-    const productQuery = query(collection(db, 'product'));
-    const fetchUserQuery = query(collection(db, 'user'));
-    const fetchOrderQuery = query(collection(db, 'order'));
-    const today = new Date();
-    const thisMonth = new Date(today.getFullYear(), today.getMonth());
-    const lastMonth = new Date(today.getFullYear(), today.getMonth() - 1);
+    const productQuery = useMemo(() => query(collection(db, 'product')), []);
+    const fetchUserQuery = useMemo(() => query(collection(db, 'user')), []);
+    const fetchOrderQuery = useMemo(() => query(collection(db, 'order')), []);
+    const today = useMemo(() => new Date(), []);
+    const thisMonth = useMemo(() => new Date(today.getFullYear(), today.getMonth()), [today]);
+    const lastMonth = useMemo(() => new Date(today.getFullYear(), today.getMonth() - 1), [today]);
 
     const totalProduct = useMemo(() => {
         return products.length;
     }, [products]);
 
-    const calculateIncreasePercent = (after: number, before: number) =>
-        before === 0 ? ((after - before) * 100) / 1 : ((after - before) * 100) / before;
+    const calculateIncreasePercent = useCallback(
+        (after: number, before: number) =>
+            before === 0 ? ((after - before) * 100) / 1 : ((after - before) * 100) / before,
+        [],
+    );
 
-    const handleView = (data: Order) => {
-        navigate(`/order/detail/${data.id}`);
-    };
     useEffect(() => {
         setIsLoading(true);
         const fetchUser = async () => {
@@ -219,9 +219,9 @@ const DashBoard = () => {
                     {latestOrders && <OrderTable ordersData={latestOrders} />}
                 </div>
             </div>
-            {isLoading && <LoadingModal />}
+            {(isLoading || isProductLoading) && <LoadingModal />}
         </>
     );
 };
 
-export default DashBoard;
+export default memo(DashBoard);

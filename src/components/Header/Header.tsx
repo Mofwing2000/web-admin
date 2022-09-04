@@ -1,5 +1,5 @@
 import i18next from 'i18next';
-import React, { useEffect } from 'react';
+import React, { memo, useCallback, useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Link } from 'react-router-dom';
 import Logo from '../../assets/image/logo.png';
@@ -13,9 +13,10 @@ import './header.scss';
 const Header = () => {
     const { user } = useAppSelector<UserState>(selectUser);
     const dispatch = useAppDispatch();
-    const handleLogout = () => {
+    const handleLogout = useCallback(() => {
         dispatch(logout());
-    };
+        i18next.changeLanguage('en');
+    }, []);
 
     const { i18n, t } = useTranslation(['common']);
 
@@ -25,9 +26,9 @@ const Header = () => {
         }
     }, []);
 
-    const handleLanguageChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
+    const handleLanguageChange = useCallback((e: React.ChangeEvent<HTMLSelectElement>) => {
         i18n.changeLanguage(e.target.value);
-    };
+    }, []);
 
     return (
         <header className="header">
@@ -86,4 +87,4 @@ const Header = () => {
     );
 };
 
-export default Header;
+export default memo(Header);

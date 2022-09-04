@@ -39,7 +39,7 @@ const ProductProfile = () => {
         };
         fetch();
     }, []);
-    console.log(productData);
+
     return (
         <>
             {productData ? (

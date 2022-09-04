@@ -1,5 +1,5 @@
 import { collection, doc, onSnapshot, query, setDoc, updateDoc } from 'firebase/firestore';
-import React, { FC, useEffect, useMemo, useRef, useState } from 'react';
+import React, { FC, memo, useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { db, storage } from '../../config/firebase.config';
 import { Top, Bottom, ProductState } from '../../models/product';
@@ -57,7 +57,7 @@ const CollectionManagePanel: FC<IProps> = (props) => {
     const searchResultRef = useRef<HTMLUListElement>(null);
     const navigate = useNavigate();
     const dispatch = useAppDispatch();
-    const productQuery = query(collection(db, 'product'));
+    const productQuery = useMemo(() => query(collection(db, 'product')), []);
 
     const schema = yup
         .object({
@@ -72,10 +72,12 @@ const CollectionManagePanel: FC<IProps> = (props) => {
         })
         .required();
 
-    const defaultFormValue = {
-        title: collectionData.title,
-        description: collectionData.description,
-    };
+    const defaultFormValue = useMemo(() => {
+        return {
+            title: collectionData.title,
+            description: collectionData.description,
+        };
+    }, [collectionData]);
 
     const {
         register,
@@ -92,50 +94,60 @@ const CollectionManagePanel: FC<IProps> = (props) => {
         if (products) return products.filter((product) => collectionValue.productsList.includes(product.id));
     }, [collectionValue.productsList, products]);
 
-    const handleTitleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-        setCollectionValue({
-            ...collectionValue,
-            title: e.target.value,
+    const handleTitleChange = useCallback((e: React.ChangeEvent<HTMLInputElement>) => {
+        setCollectionValue((prev) => {
+            return {
+                ...prev,
+                title: e.target.value,
+            };
         });
-    };
+    }, []);
 
-    const handleDescriptionChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-        setCollectionValue({
-            ...collectionValue,
-            description: e.target.value,
+    const handleDescriptionChange = useCallback((e: React.ChangeEvent<HTMLInputElement>) => {
+        setCollectionValue((prev) => {
+            return {
+                ...prev,
+                description: e.target.value,
+            };
         });
-    };
-    // console.log(collectionValue);
-    function isFileImage(file: File) {
+    }, []);
+
+    const isFileImage = useCallback((file: File) => {
         return file && file.type.split('/')[0] === 'image';
-    }
+    }, []);
 
-    const handleProductToggle = (product: Top | Bottom) => {
-        if (collectionValue.productsList?.includes(product.id)) {
-            const index = collectionValue.productsList.findIndex((element) => element === product.id);
-            const newArr = [...collectionValue.productsList];
-            newArr.splice(index, 1);
-            if (index != -1) setCollectionValue({ ...collectionValue, productsList: [...newArr] });
-        } else {
-            setCollectionValue({ ...collectionValue, productsList: [...collectionValue.productsList, product.id] });
-        }
-    };
-    const handleProductDelete = () => {
+    const handleProductToggle = useCallback(
+        (product: Top | Bottom) => {
+            if (collectionValue.productsList?.includes(product.id)) {
+                const index = collectionValue.productsList.findIndex((element) => element === product.id);
+                const newArr = [...collectionValue.productsList];
+                newArr.splice(index, 1);
+                if (index != -1)
+                    setCollectionValue((prev) => {
+                        return { ...prev, productsList: [...newArr] };
+                    });
+            } else {
+                setCollectionValue((prev) => {
+                    return { ...prev, productsList: [...collectionValue.productsList, product.id] };
+                });
+            }
+        },
+        [collectionValue],
+    );
+    const handleProductDelete = useCallback(() => {
         if (editingItem) {
-            const index = collectionValue.productsList.findIndex(
-                (element) => JSON.stringify(element) === JSON.stringify(editingItem),
-            );
+            const index = collectionValue.productsList.findIndex((element) => element === editingItem.id);
             const newArr = [...collectionValue.productsList];
             newArr.splice(index, 1);
             if (index != -1) setCollectionValue({ ...collectionValue, productsList: [...newArr] });
         }
         setEditingItem(undefined);
-    };
-    const handleView = (product: Top | Bottom) => {
+    }, [editingItem, collectionValue]);
+    const handleView = useCallback((product: Top | Bottom) => {
         const productNameUrl = product.name.toLowerCase().replace(' ', '-');
         navigate(`/product/view/${product.id}/${productNameUrl}`);
-    };
-    const uploadBanner = async () => {
+    }, []);
+    const uploadBanner = useCallback(async () => {
         if (banner) {
             setIsLoading(true);
             const bannerFileName = cuid() + banner.name;
@@ -161,9 +173,9 @@ const CollectionManagePanel: FC<IProps> = (props) => {
                 },
             );
         }
-    };
+    }, [banner]);
 
-    const addCollection = async () => {
+    const addCollection = useCallback(async () => {
         try {
             const id = cuid();
             dispatch(
@@ -190,9 +202,9 @@ const CollectionManagePanel: FC<IProps> = (props) => {
             setIsLoading(false);
             if (error instanceof FirebaseError) toast(error.message);
         }
-    };
+    }, []);
 
-    const updateCollection = async () => {
+    const updateCollection = useCallback(async () => {
         dispatch(
             updateColllectionAsync.request({
                 ...collectionValue,
@@ -200,9 +212,9 @@ const CollectionManagePanel: FC<IProps> = (props) => {
         );
         setIsLoading(false);
         toast.success(`${t('common:updateCollectionSucceed')}`);
-    };
+    }, []);
 
-    const onSubmit = async () => {
+    const onSubmit = useCallback(async () => {
         setIsLoading(true);
         if (collectionValue.productsList.length < 1) {
             toast.error(`${t('common:requireAProduct')}`);
@@ -211,7 +223,7 @@ const CollectionManagePanel: FC<IProps> = (props) => {
         }
         if (action === CollectionAction.ADD) await addCollection();
         else if (action === CollectionAction.UPDATE) await updateCollection();
-    };
+    }, [collectionValue]);
 
     useEffect(() => {
         dispatch(fetchProductsAsync.request(productQuery));
@@ -461,4 +473,4 @@ const CollectionManagePanel: FC<IProps> = (props) => {
     );
 };
 
-export default CollectionManagePanel;
+export default memo(CollectionManagePanel);

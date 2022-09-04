@@ -1,6 +1,6 @@
-import React, { useEffect, useState } from 'react';
+import React, { memo, useEffect, useState } from 'react';
 import { User } from '../../models/user';
-import { useLocation, useParams } from 'react-router-dom';
+import { useParams } from 'react-router-dom';
 import UserManagePanel from '../user-manage-panel/UserManagePanel';
 import { getDoc, doc } from 'firebase/firestore';
 import { db } from '../../config/firebase.config';
@@ -17,10 +17,9 @@ const EditUserProfile = () => {
         };
         fetch();
     }, []);
-    console.log(userValue);
     return (
         <div>{userValue ? <UserManagePanel type="update" data={{ ...userValue } as User} /> : <LoadingModal />}</div>
     );
 };
 
-export default EditUserProfile;
+export default memo(EditUserProfile);

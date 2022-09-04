@@ -1,4 +1,4 @@
-import React, { useCallback, useState } from 'react';
+import React, { memo, useCallback, useState } from 'react';
 import { Order, OrderState } from '../../models/order';
 import { Link, useNavigate } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
@@ -160,4 +160,4 @@ const OrderTable = (props: Iprops) => {
     );
 };
 
-export default OrderTable;
+export default memo(OrderTable);

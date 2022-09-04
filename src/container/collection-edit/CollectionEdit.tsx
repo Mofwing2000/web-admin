@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { memo, useEffect, useState } from 'react';
 import { User } from '../../models/user';
 import { useLocation, useParams } from 'react-router-dom';
 import ProductManagePanel from '../product-manage-panel/ProductManagePanel';
@@ -31,4 +31,4 @@ const CollectionEdit = () => {
     );
 };
 
-export default CollectionEdit;
+export default memo(CollectionEdit);

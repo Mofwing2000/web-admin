@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { memo } from 'react';
 import { Link } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import './side_bar.scss';
@@ -58,4 +58,4 @@ const SideBar = () => {
     );
 };
 
-export default SideBar;
+export default memo(SideBar);

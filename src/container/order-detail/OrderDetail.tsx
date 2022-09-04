@@ -44,33 +44,38 @@ const OrderDetail = () => {
         resolver: yupResolver(schema),
     });
 
-    const handleTrackingClick = () => {
+    const handleTrackingClick = useCallback(() => {
         if (orderData?.orderState === OrderState.CANCELED || orderData?.orderState === OrderState.DELIVERED) return;
         if (trackingFormRef.current!.classList.contains('show') === false)
             trackingFormRef.current!.classList.add('show');
-    };
+    }, [orderData, trackingFormRef]);
 
-    const handleTrackingCancel = (e: React.MouseEvent<HTMLButtonElement>) => {
-        e.preventDefault();
-        e.stopPropagation();
-        if (trackingFormRef.current!.classList.contains('show')) trackingFormRef.current!.classList.remove('show');
-    };
+    const handleTrackingCancel = useCallback(
+        (e: React.MouseEvent<HTMLButtonElement>) => {
+            e.preventDefault();
+            e.stopPropagation();
+            if (trackingFormRef.current!.classList.contains('show')) trackingFormRef.current!.classList.remove('show');
+        },
+        [trackingFormRef],
+    );
 
-    const handleMarkShipped = async () => {
-        setIsLoading(true);
-        try {
-            await updateDoc(doc(db, 'order', orderData!.id), {
-                orderState: OrderState.DELIVERED,
-                receivingDate: new Date(Date.now()),
-            });
-            setIsLoading(false);
-        } catch (error) {
-            if (error instanceof FirebaseError) toast.error(error.message);
-            setIsLoading(false);
+    const handleMarkShipped = useCallback(async () => {
+        if (orderData) {
+            setIsLoading(true);
+            try {
+                await updateDoc(doc(db, 'order', orderData!.id), {
+                    orderState: OrderState.DELIVERED,
+                    receivingDate: new Date(Date.now()),
+                });
+                setIsLoading(false);
+            } catch (error) {
+                if (error instanceof FirebaseError) toast.error(error.message);
+                setIsLoading(false);
+            }
         }
-    };
+    }, [orderData]);
 
-    const updateQuantity = async (id: string, tempLimit: any) => {
+    const updateQuantity = useCallback(async (id: string, tempLimit: any) => {
         const docRef = doc(db, 'product', id);
         try {
             await runTransaction(db, async (transaction) => {
@@ -83,7 +88,7 @@ const OrderDetail = () => {
         } catch (error) {
             if (error instanceof FirebaseError) toast.error(error.message);
         }
-    };
+    }, []);
 
     const returnQuantity = useCallback(async () => {
         let tempLimit: any = {};
@@ -98,45 +103,50 @@ const OrderDetail = () => {
         }
     }, [orderData]);
 
-    const handleCancelOrder = async () => {
-        if (trackingFormRef.current!.classList.contains('show')) trackingFormRef.current!.classList.remove('show');
-        setIsLoading(false);
-        try {
-            await updateDoc(doc(db, 'order', orderData!.id), {
-                orderState: OrderState.CANCELED,
-            });
-            await returnQuantity();
+    const handleCancelOrder = useCallback(async () => {
+        if (orderData) {
+            if (trackingFormRef.current!.classList.contains('show')) trackingFormRef.current!.classList.remove('show');
             setIsLoading(false);
-        } catch (error) {
-            if (error instanceof FirebaseError) toast.error(error.message);
-            setIsLoading(false);
+            try {
+                await updateDoc(doc(db, 'order', orderData!.id), {
+                    orderState: OrderState.CANCELED,
+                });
+                await returnQuantity();
+                setIsLoading(false);
+            } catch (error) {
+                if (error instanceof FirebaseError) toast.error(error.message);
+                setIsLoading(false);
+            }
         }
-    };
+    }, [trackingFormRef, orderData]);
 
-    const onTrackingSubmit = async (data: FormValues) => {
-        setIsLoading(true);
-        if (trackingFormRef.current!.classList.contains('show')) trackingFormRef.current!.classList.remove('show');
-        try {
-            if (orderData?.orderState === OrderState.PENDING) {
-                await updateDoc(doc(db, 'order', orderData!.id), {
-                    trackingNumber: data.tracking,
-                    shippingDate: new Date(Date.now()),
-                    orderState: OrderState.SHIPPED,
-                });
-                toast.success(t('common:updateOrderSucceed'));
+    const onTrackingSubmit = useCallback(
+        async (data: FormValues) => {
+            setIsLoading(true);
+            if (trackingFormRef.current!.classList.contains('show')) trackingFormRef.current!.classList.remove('show');
+            try {
+                if (orderData?.orderState === OrderState.PENDING) {
+                    await updateDoc(doc(db, 'order', orderData!.id), {
+                        trackingNumber: data.tracking,
+                        shippingDate: new Date(Date.now()),
+                        orderState: OrderState.SHIPPED,
+                    });
+                    toast.success(t('common:updateOrderSucceed'));
+                }
+                if (orderData?.orderState === OrderState.SHIPPED) {
+                    await updateDoc(doc(db, 'order', orderData!.id), {
+                        trackingNumber: data.tracking,
+                    });
+                    toast.success(t('common:updateOrderSucceed'));
+                }
+                setIsLoading(false);
+            } catch (error) {
+                if (error instanceof FirebaseError) toast.error(error.message);
+                setIsLoading(false);
             }
-            if (orderData?.orderState === OrderState.SHIPPED) {
-                await updateDoc(doc(db, 'order', orderData!.id), {
-                    trackingNumber: data.tracking,
-                });
-                toast.success(t('common:updateOrderSucceed'));
-            }
-            setIsLoading(false);
-        } catch (error) {
-            if (error instanceof FirebaseError) toast.error(error.message);
-            setIsLoading(false);
-        }
-    };
+        },
+        [trackingFormRef, orderData],
+    );
 
     useEffect(() => {
         setIsLoading(true);

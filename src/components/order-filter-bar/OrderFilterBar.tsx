@@ -23,7 +23,9 @@ const OrderFilterBar: FC<IProps> = (props) => {
                         id="pageLimit"
                         className="form-select cursor"
                         aria-label="pageLimit-select"
-                        onChange={(e) => setPageSize(e.target.value === '10' ? 10 : e.target.value === '20' ? 20 : 50)}
+                        onChange={(e) => {
+                            setPageSize(e.target.value === '10' ? 10 : e.target.value === '20' ? 20 : 50);
+                        }}
                         value={pageSize}
                     >
                         <option value="10">10</option>

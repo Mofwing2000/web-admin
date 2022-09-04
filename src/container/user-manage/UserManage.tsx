@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import {
     collection,
     deleteDoc,
@@ -47,7 +47,7 @@ const UserManage = () => {
     const [currentFilteredUsers, setCurrentFilteredUsers] = useState<User[]>([]);
     const navigate = useNavigate();
     const dispatch = useAppDispatch();
-    const handleUserDelete = async () => {
+    const handleUserDelete = useCallback(async () => {
         setIsLoading(true);
         if (editingItem)
             try {
@@ -59,14 +59,17 @@ const UserManage = () => {
                 if (error instanceof FirebaseError) toast.error(error.message);
             }
         setEditingItem(null);
-    };
+    }, [editingItem]);
 
-    const handlePageClick = (event: { selected: number }) => {
-        if (users) {
-            const newOffset = (event.selected * pageSize) % users.length;
-            setItemOffset(newOffset);
-        }
-    };
+    const handlePageClick = useCallback(
+        (event: { selected: number }) => {
+            if (users) {
+                const newOffset = (event.selected * pageSize) % users.length;
+                setItemOffset(newOffset);
+            }
+        },
+        [users],
+    );
 
     useEffect(() => {
         if (users) {
@@ -76,18 +79,17 @@ const UserManage = () => {
         }
     }, [itemOffset, users, pageSize]);
 
-    const handleView = (data: User) => {
+    const handleView = useCallback((data: User) => {
         navigate(`/user/view/${data.id}`);
-    };
+    }, []);
 
     useEffect(() => {
         const filterQuery = query(collection(db, 'user'), orderBy(sortType, sortOrder));
         dispatch(fetchUsersAsync.request(filterQuery));
-        // return () => {
-        //     dispatch(clearUsers());
-        // };
+        return () => {
+            dispatch(clearUsers());
+        };
     }, [pageSize, sortType, sortOrder]);
-    console.log(users);
     return (
         <div className="user-manage">
             <div className="user-manage__add position-relative">
@@ -197,98 +199,105 @@ const UserManage = () => {
                         </tr>
                     </thead>
                     <tbody className="user-manage__table__body">
-                        {currentFilteredUsers &&
-                            currentFilteredUsers!.map((userData, index) => (
-                                <tr className="user-manage__table__body__row d-flex" key={index}>
-                                    <td className="user-manage__table__body__row__data user-image col-1 d-inlne-block text-truncate">
-                                        <div
-                                            className="user-manage__table__body__row__data__img"
-                                            style={{ backgroundImage: `url(${userData.photoUrl})` }}
-                                        ></div>
-                                    </td>
-                                    <td className="product-manage__table__body__row__data col-2 d-inline-block text-truncate">
-                                        <span
-                                            data-tip
-                                            data-for={userData.id + 'name'}
-                                            onMouseEnter={() => setTooltip(true)}
-                                            onMouseLeave={() => setTooltip(false)}
-                                        >
-                                            {userData.firstName + ' ' + userData.lastName}
-                                        </span>
-                                        {tooltip && (
-                                            <ReactTooltip id={userData.id + 'name'} effect="float">
-                                                <span>{userData.firstName + ' ' + userData.lastName}</span>
-                                            </ReactTooltip>
-                                        )}
-                                    </td>
-                                    <td className="product-manage__table__body__row__data col-3 d-inline-block text-truncate">
-                                        <span
-                                            data-tip
-                                            data-for={userData.id + 'email'}
-                                            onMouseEnter={() => setTooltip(true)}
-                                            onMouseLeave={() => setTooltip(false)}
-                                        >
-                                            {userData.email}
-                                        </span>
-                                        {tooltip && (
-                                            <ReactTooltip id={userData.id + 'email'} effect="float">
-                                                <span>{userData.email}</span>
-                                            </ReactTooltip>
-                                        )}
-                                    </td>
-                                    <td className="product-manage__table__body__row__data col-1 d-inline-block text-truncate">
-                                        <span
-                                            data-tip
-                                            data-for={userData.id + 'phone'}
-                                            onMouseEnter={() => setTooltip(true)}
-                                            onMouseLeave={() => setTooltip(false)}
-                                        >
-                                            {userData.phoneNumber}
-                                        </span>
-                                        {tooltip && (
-                                            <ReactTooltip id={userData.id + 'phone'} effect="float">
-                                                <span>{userData.phoneNumber}</span>
-                                            </ReactTooltip>
-                                        )}
-                                    </td>
-                                    <td className="product-manage__table__body__row__data col-2 d-inline-block text-truncate">
-                                        <span
-                                            data-tip
-                                            data-for={userData.id + 'address'}
-                                            onMouseEnter={() => setTooltip(true)}
-                                            onMouseLeave={() => setTooltip(false)}
-                                        >
-                                            {userData.address}
-                                        </span>
-                                        {tooltip && (
-                                            <ReactTooltip id={userData.id + 'address'} effect="float">
-                                                <span>{userData.address}</span>
-                                            </ReactTooltip>
-                                        )}
-                                    </td>
-                                    <td className="product-manage__table__body__row__data col-1 d-inline-block text-truncate">
-                                        {t(`user:${userData.role}`)}
-                                    </td>
-                                    <td className="product-manage__table__body__row__data col-2 d-inline-block text-truncate">
-                                        <div>
-                                            <button className="btn btn-primary" onClick={() => handleView(userData)}>
-                                                {t('common:view')}
-                                            </button>
-                                            <button
-                                                type="button"
-                                                className="btn btn-danger"
-                                                data-bs-toggle="modal"
-                                                data-bs-target="#confirmModal"
-                                                onClick={() => {
-                                                    setEditingItem(userData.id);
-                                                }}
+                        {useMemo(
+                            () =>
+                                currentFilteredUsers &&
+                                currentFilteredUsers!.map((userData, index) => (
+                                    <tr className="user-manage__table__body__row d-flex" key={index}>
+                                        <td className="user-manage__table__body__row__data user-image col-1 d-inlne-block text-truncate">
+                                            <div
+                                                className="user-manage__table__body__row__data__img"
+                                                style={{ backgroundImage: `url(${userData.photoUrl})` }}
+                                            ></div>
+                                        </td>
+                                        <td className="product-manage__table__body__row__data col-2 d-inline-block text-truncate">
+                                            <span
+                                                data-tip
+                                                data-for={userData.id + 'name'}
+                                                onMouseEnter={() => setTooltip(true)}
+                                                onMouseLeave={() => setTooltip(false)}
                                             >
-                                                {t('common:delete')}
-                                            </button>
-                                        </div>
-                                    </td>
-                                </tr>
-                            ))}
+                                                {userData.firstName + ' ' + userData.lastName}
+                                            </span>
+                                            {tooltip && (
+                                                <ReactTooltip id={userData.id + 'name'} effect="float">
+                                                    <span>{userData.firstName + ' ' + userData.lastName}</span>
+                                                </ReactTooltip>
+                                            )}
+                                        </td>
+                                        <td className="product-manage__table__body__row__data col-3 d-inline-block text-truncate">
+                                            <span
+                                                data-tip
+                                                data-for={userData.id + 'email'}
+                                                onMouseEnter={() => setTooltip(true)}
+                                                onMouseLeave={() => setTooltip(false)}
+                                            >
+                                                {userData.email}
+                                            </span>
+                                            {tooltip && (
+                                                <ReactTooltip id={userData.id + 'email'} effect="float">
+                                                    <span>{userData.email}</span>
+                                                </ReactTooltip>
+                                            )}
+                                        </td>
+                                        <td className="product-manage__table__body__row__data col-1 d-inline-block text-truncate">
+                                            <span
+                                                data-tip
+                                                data-for={userData.id + 'phone'}
+                                                onMouseEnter={() => setTooltip(true)}
+                                                onMouseLeave={() => setTooltip(false)}
+                                            >
+                                                {userData.phoneNumber}
+                                            </span>
+                                            {tooltip && (
+                                                <ReactTooltip id={userData.id + 'phone'} effect="float">
+                                                    <span>{userData.phoneNumber}</span>
+                                                </ReactTooltip>
+                                            )}
+                                        </td>
+                                        <td className="product-manage__table__body__row__data col-2 d-inline-block text-truncate">
+                                            <span
+                                                data-tip
+                                                data-for={userData.id + 'address'}
+                                                onMouseEnter={() => setTooltip(true)}
+                                                onMouseLeave={() => setTooltip(false)}
+                                            >
+                                                {userData.address}
+                                            </span>
+                                            {tooltip && (
+                                                <ReactTooltip id={userData.id + 'address'} effect="float">
+                                                    <span>{userData.address}</span>
+                                                </ReactTooltip>
+                                            )}
+                                        </td>
+                                        <td className="product-manage__table__body__row__data col-1 d-inline-block text-truncate">
+                                            {t(`user:${userData.role}`)}
+                                        </td>
+                                        <td className="product-manage__table__body__row__data col-2 d-inline-block text-truncate">
+                                            <div>
+                                                <button
+                                                    className="btn btn-primary"
+                                                    onClick={() => handleView(userData)}
+                                                >
+                                                    {t('common:view')}
+                                                </button>
+                                                <button
+                                                    type="button"
+                                                    className="btn btn-danger"
+                                                    data-bs-toggle="modal"
+                                                    data-bs-target="#confirmModal"
+                                                    onClick={() => {
+                                                        setEditingItem(userData.id);
+                                                    }}
+                                                >
+                                                    {t('common:delete')}
+                                                </button>
+                                            </div>
+                                        </td>
+                                    </tr>
+                                )),
+                            [currentFilteredUsers],
+                        )}
                     </tbody>
                 </table>
             </div>

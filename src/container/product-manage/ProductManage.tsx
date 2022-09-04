@@ -13,7 +13,7 @@ import {
     QueryDocumentSnapshot,
     startAfter,
 } from 'firebase/firestore';
-import React, { useEffect, useMemo, useRef, useState } from 'react';
+import React, { memo, useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useNavigate } from 'react-router-dom';
 import { toast } from 'react-toastify';
@@ -53,24 +53,27 @@ const ProductManage = () => {
         () => query(collection(db, 'product'), orderBy(sortType, sortOrder)),
         [sortType, sortOrder],
     );
-    const handleProductDelete = async () => {
+    const handleProductDelete = useCallback(async () => {
         if (editingItem) {
             dispatch(deleteProductAsync.request(editingItem));
         }
         setEditingItem(null);
-    };
+    }, [editingItem]);
 
-    const handleView = (data: Top | Bottom) => {
+    const handleView = useCallback((data: Top | Bottom) => {
         const productNameUrl = data.name.toLowerCase().replace(' ', '-');
         navigate(`/product/view/${data.id}/${productNameUrl}`);
-    };
+    }, []);
 
-    const handlePageClick = (event: { selected: number }) => {
-        if (products) {
-            const newOffset = (event.selected * pageSize) % products.length;
-            setItemOffset(newOffset);
-        }
-    };
+    const handlePageClick = useCallback(
+        (event: { selected: number }) => {
+            if (products) {
+                const newOffset = (event.selected * pageSize) % products.length;
+                setItemOffset(newOffset);
+            }
+        },
+        [products],
+    );
 
     useEffect(() => {
         if (products.length) {
@@ -115,32 +118,36 @@ const ProductManage = () => {
                                 ref={searchResultRef}
                                 onMouseDown={(e) => e.preventDefault()}
                             >
-                                {searchValue &&
-                                    products &&
-                                    products
-                                        .filter(
-                                            (product) =>
-                                                product.name &&
-                                                product.name.toLowerCase().includes(searchValue.toLowerCase()),
-                                        )
-                                        .slice(0, 5)
-                                        .map((product, index) => (
-                                            <li
-                                                key={index}
-                                                className="product-manage__search__list__item row p-3 w-100"
-                                            >
-                                                <div className="col-3">
-                                                    <div
-                                                        className="product-manage__search__list__item__image"
-                                                        style={{ backgroundImage: `url(${product.photoUrls[0]})` }}
-                                                    ></div>
-                                                </div>
+                                {useMemo(
+                                    () =>
+                                        searchValue &&
+                                        products &&
+                                        products
+                                            .filter(
+                                                (product) =>
+                                                    product.name &&
+                                                    product.name.toLowerCase().includes(searchValue.toLowerCase()),
+                                            )
+                                            .slice(0, 5)
+                                            .map((product, index) => (
+                                                <li
+                                                    key={index}
+                                                    className="product-manage__search__list__item row p-3 w-100"
+                                                >
+                                                    <div className="col-3">
+                                                        <div
+                                                            className="product-manage__search__list__item__image"
+                                                            style={{ backgroundImage: `url(${product.photoUrls[0]})` }}
+                                                        ></div>
+                                                    </div>
 
-                                                <div className="product-manage__search__list__item__content col-9 d-flex justify-content-between">
-                                                    <p className="fw-bold">{product.name}</p>
-                                                </div>
-                                            </li>
-                                        ))}
+                                                    <div className="product-manage__search__list__item__content col-9 d-flex justify-content-between">
+                                                        <p className="fw-bold">{product.name}</p>
+                                                    </div>
+                                                </li>
+                                            )),
+                                    [products, searchValue],
+                                )}
                             </ul>
                         </div>
                     </div>
@@ -426,4 +433,4 @@ const ProductManage = () => {
     );
 };
 
-export default ProductManage;
+export default memo(ProductManage);

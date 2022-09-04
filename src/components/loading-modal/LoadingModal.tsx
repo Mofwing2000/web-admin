@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { memo } from 'react';
 import './loading-modal.scss';
 
 const LoadingModal = () => {
@@ -12,4 +12,4 @@ const LoadingModal = () => {
     );
 };
 
-export default LoadingModal;
+export default memo(LoadingModal);
