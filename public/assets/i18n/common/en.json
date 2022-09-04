@@ -40,5 +40,17 @@
     "requireAProduct": "Please add at least 1 product",
     "forgotPassword": "Forgot password",
     "actionConfirm": "Confirm this action",
-    "confirmActionQuest": "Do you want to continue?"
+    "confirmActionQuest": "Do you want to continue?",
+    "January": "January",
+    "February": "February",
+    "March": "March",
+    "April": "April",
+    "May": "May",
+    "June": "June",
+    "July": "July",
+    "August": "August",
+    "September": "September",
+    "October": "October",
+    "November": "November",
+    "December": "December"
 }
