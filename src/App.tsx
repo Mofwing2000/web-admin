@@ -66,14 +66,7 @@ function App() {
                                     </AdminRoute>
                                 }
                             ></Route>
-                            <Route
-                                path="view/:userId/*"
-                                element={
-                                    <AdminRoute>
-                                        <UserProfile />
-                                    </AdminRoute>
-                                }
-                            ></Route>
+                            <Route path="view/:userId/*" element={<UserProfile />}></Route>
                             <Route
                                 path="edit/:userId/*"
                                 element={
