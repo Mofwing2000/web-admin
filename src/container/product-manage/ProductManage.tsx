@@ -13,7 +13,7 @@ import {
     QueryDocumentSnapshot,
     startAfter,
 } from 'firebase/firestore';
-import React, { useEffect, useMemo, useState } from 'react';
+import React, { useEffect, useMemo, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useNavigate } from 'react-router-dom';
 import { toast } from 'react-toastify';
@@ -45,6 +45,8 @@ const ProductManage = () => {
     const [isEditing, setIsEditing] = useState<Boolean>(false);
     const [addType, setAddtype] = useState<ProductAction>('add-top');
     const [editingItem, setEditingItem] = useState<null | string>(null);
+    const [searchValue, setSearchValue] = useState<string>();
+    const searchResultRef = useRef<HTMLUListElement>(null);
     const navigate = useNavigate();
     const dispatch = useAppDispatch();
     const filterQuery = useMemo(
@@ -87,8 +89,63 @@ const ProductManage = () => {
         };
     }, [pageSize, filterQuery]);
     return (
-        <div className="product-manage-container">
-            <div className="product-manage-container__add position-relative">
+        <div className="product-manage">
+            <div className="product-manage__add position-relative">
+                <div className="row d-flex justify-content-end">
+                    <div className="col-xl-4 col-6">
+                        <div className="product-manage__search input-group position-relative">
+                            <input
+                                type="search"
+                                className="form-control"
+                                aria-describedby="search"
+                                value={searchValue}
+                                onChange={(e) => setSearchValue(e.target.value)}
+                                onFocus={() => {
+                                    searchResultRef.current!.style.display = 'flex';
+                                }}
+                                onBlur={() => {
+                                    searchResultRef.current!.style.display = 'none';
+                                }}
+                            />
+                            <span className="input-group-text">
+                                <i className="fa fa-search" id="search"></i>
+                            </span>
+                            <ul
+                                className="product-manage__search__list position-absolute light-bg w-100 justify-content-center align-items-center flex-column"
+                                ref={searchResultRef}
+                                onMouseDown={(e) => e.preventDefault()}
+                            >
+                                {searchValue &&
+                                    products &&
+                                    products
+                                        .filter(
+                                            (product) =>
+                                                product.name &&
+                                                product.name.toLowerCase().includes(searchValue.toLowerCase()),
+                                        )
+                                        .slice(0, 5)
+                                        .map((product, index) => (
+                                            <li
+                                                key={index}
+                                                className="product-manage__search__list__item row p-3 w-100"
+                                            >
+                                                <div className="col-3">
+                                                    <div
+                                                        className="product-manage__search__list__item__image"
+                                                        style={{ backgroundImage: `url(${product.photoUrls[0]})` }}
+                                                    ></div>
+                                                </div>
+
+                                                <div className="product-manage__search__list__item__content col-9 d-flex justify-content-between">
+                                                    <p className="fw-bold">{product.name}</p>
+                                                </div>
+                                            </li>
+                                        ))}
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+
                 {isEditing ? (
                     <ProductManagePanel type={addType} />
                 ) : (
@@ -115,13 +172,13 @@ const ProductManage = () => {
                 )}
                 {isEditing && (
                     <i
-                        className="product-manage-container__add__close fa-solid fa-xmark position-absolute top-0 end-0 fs-3 text-danger"
+                        className="product-manage__add__close fa-solid fa-xmark position-absolute top-0 end-0 fs-3 text-danger"
                         onClick={() => setIsEditing(false)}
                     ></i>
                 )}
             </div>
-            <div className="product-manage-container__filter">
-                <div className="product-manage-container__filter__control d-flex gap-5 mt-5">
+            <div className="product-manage__filter">
+                <div className="product-manage__filter__control d-flex gap-5 mt-5">
                     <ProductFilterBar
                         pageSize={pageSize}
                         sortType={sortType}
@@ -131,9 +188,9 @@ const ProductManage = () => {
                         setSortOrder={setSortOrder}
                     />
                 </div>
-                <div className="product-manage-container__table table-responsive-sm">
+                <div className="product-manage__table table-responsive-sm">
                     <table className="table table-bordered mt-3">
-                        <thead className="product-manage-container__table__head">
+                        <thead className="product-manage__table__head">
                             <tr className="d-flex">
                                 <th scope="col" className="col-1 d-inline-block text-truncate">
                                     {t('product:product')}
@@ -164,18 +221,18 @@ const ProductManage = () => {
                                 </th>
                             </tr>
                         </thead>
-                        <tbody className="product-manage-container__table__body">
+                        <tbody className="product-manage__table__body">
                             {currentFilteredProduct &&
                                 currentFilteredProduct.map((data, index) => (
-                                    <tr key={index} className="product-manage-container__table__body__row d-flex">
-                                        <td className="product-manage-container__table__body__row__data product-image-container col-1 d-inline-block text-truncate">
+                                    <tr key={index} className="product-manage__table__body__row d-flex">
+                                        <td className="product-manage__table__body__row__data product-image-container col-1 d-inline-block text-truncate">
                                             <div
-                                                className="product-manage-container__table__body__row__data__img"
+                                                className="product-manage__table__body__row__data__img"
                                                 style={{ backgroundImage: `url(${data.photoUrls[0]})` }}
                                             ></div>
                                         </td>
                                         <td
-                                            className={`product-manage-container__table__body__row__data col-3 d-inline-block text-truncate`}
+                                            className={`product-manage__table__body__row__data col-3 d-inline-block text-truncate`}
                                         >
                                             <span
                                                 data-tip
@@ -192,10 +249,10 @@ const ProductManage = () => {
                                             )}
                                         </td>
 
-                                        <td className="product-manage-container__table__body__row__data col-1 d-inline-block text-truncate">
+                                        <td className="product-manage__table__body__row__data col-1 d-inline-block text-truncate">
                                             {data.productType}
                                         </td>
-                                        <td className="product-manage-container__table__body__row__data col-1 d-inline-block text-truncate">
+                                        <td className="product-manage__table__body__row__data col-1 d-inline-block text-truncate">
                                             <span
                                                 data-tip
                                                 data-for={data.id + 'size'}
@@ -224,7 +281,7 @@ const ProductManage = () => {
                                                 </ReactTooltip>
                                             )}
                                         </td>
-                                        <td className="product-manage-container__table__body__row__data col-1 d-inline-block text-truncate">
+                                        <td className="product-manage__table__body__row__data col-1 d-inline-block text-truncate">
                                             <span
                                                 data-tip
                                                 data-for={data.id + 'color'}
@@ -253,13 +310,13 @@ const ProductManage = () => {
                                                 </ReactTooltip>
                                             )}
                                         </td>
-                                        <td className="product-manage-container__table__body__row__data col-1 d-inline-block text-truncate">
+                                        <td className="product-manage__table__body__row__data col-1 d-inline-block text-truncate">
                                             {data.quantity}
                                         </td>
-                                        <td className="product-manage-container__table__body__row__data col-1 d-inline-block text-truncate">
+                                        <td className="product-manage__table__body__row__data col-1 d-inline-block text-truncate">
                                             {data.price}$
                                         </td>
-                                        <td className="product-manage-container__table__body__row__data col-1 d-inline-block text-truncate">
+                                        <td className="product-manage__table__body__row__data col-1 d-inline-block text-truncate">
                                             <span
                                                 data-tip
                                                 data-for={data.id + 'category'}
@@ -306,7 +363,7 @@ const ProductManage = () => {
                                                 </ReactTooltip>
                                             )}
                                         </td>
-                                        <td className="product-manage-container__table__body__row__data col-2 d-inline-block text-truncate">
+                                        <td className="product-manage__table__body__row__data col-2 d-inline-block text-truncate">
                                             <div className="d-flex  align-items-center gap-2">
                                                 <button className="btn btn-primary" onClick={() => handleView(data)}>
                                                     {t('common:view')}
@@ -329,7 +386,7 @@ const ProductManage = () => {
                         </tbody>
                     </table>
                 </div>
-                <div className="product-manage-container__table__pagination">
+                <div className="product-manage__table__pagination">
                     {currentFilteredProduct && <Pagination onPageChange={handlePageClick} pageCount={pageCount} />}
                 </div>
             </div>

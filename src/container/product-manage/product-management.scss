@@ -1,6 +1,37 @@
 @use '../../sass/style.scss' as *;
 
-.product-manage-container {
+.product-manage {
+    &__search {
+        margin-bottom: 50px;
+
+        // &:hover &__list {
+        //     display: flex;
+        // }
+
+        &__list {
+            display: none;
+            background-color: $background-2;
+            width: 100%;
+            top: 100%;
+            left: 0;
+            &__item {
+                &__image {
+                    @include square-div-with-background();
+                }
+                &:hover {
+                    background-color: $background;
+                }
+            }
+        }
+    }
+    &__table {
+        &__img-container {
+            &__content {
+                @include square-div-with-background();
+            }
+        }
+    }
+
     &__add {
         &__close {
             transform: translate(-16px, 10px);
