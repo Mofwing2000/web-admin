@@ -15,7 +15,7 @@ import {
 } from 'firebase/firestore';
 import React, { memo, useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { useNavigate } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import { toast } from 'react-toastify';
 import ReactTooltip from 'react-tooltip';
 import LoadingModal from '../../components/loading-modal/LoadingModal';
@@ -142,7 +142,14 @@ const ProductManage = () => {
                                                     </div>
 
                                                     <div className="product-manage__search__list__item__content col-9 d-flex justify-content-between">
-                                                        <p className="fw-bold">{product.name}</p>
+                                                        <Link
+                                                            to={`view/${product.id}/${product.name
+                                                                .toLowerCase()
+                                                                .replace(' ', '-')}`}
+                                                            replace={true}
+                                                        >
+                                                            <p className="fw-bold">{product.name}</p>
+                                                        </Link>
                                                     </div>
                                                 </li>
                                             )),
