@@ -292,12 +292,12 @@ const UserManagePanel = (props: IProps) => {
                                 className="form-control"
                                 id="email"
                                 // defaultValue={user.email}
-                                disabled
+                                disabled={props.type === 'update'}
                                 value={userFormValue.email}
                                 aria-describedby="email"
                                 placeholder="abc@gmail.com"
                             />
-                            {<p>{errors.email?.message}</p>}
+                            {<p className="text-danger">{errors.email?.message}</p>}
                         </div>
                         <div className="form-group col-6">
                             <label htmlFor="password">{t('user:password')}:</label>
@@ -313,7 +313,7 @@ const UserManagePanel = (props: IProps) => {
                                 })}
                                 placeholder="8 characters at least"
                             />
-                            <p>{errors.password?.message}</p>
+                            <p className="text-danger">{errors.password?.message}</p>
                         </div>
                         <div className="form-group col-6">
                             <label htmlFor="firstName">{t('user:firstName')}:</label>
@@ -329,7 +329,7 @@ const UserManagePanel = (props: IProps) => {
                                     onChange: handleFirstNameChange,
                                 })}
                             />
-                            {<p>{errors.firstName?.message}</p>}
+                            {<p className="text-danger">{errors.firstName?.message}</p>}
                         </div>
                         <div className="form-group col-6">
                             <label htmlFor="lastName">{t('user:lastName')}:</label>
@@ -345,7 +345,7 @@ const UserManagePanel = (props: IProps) => {
                                     onChange: handleLastNameChange,
                                 })}
                             />
-                            {<p>{errors.lastName?.message}</p>}
+                            {<p className="text-danger">{errors.lastName?.message}</p>}
                         </div>
                         <div className="form-group col-6">
                             <label htmlFor="phone">{t('user:phoneNumber')}:</label>
@@ -361,7 +361,7 @@ const UserManagePanel = (props: IProps) => {
                                     onChange: handlePhoneNumberChange,
                                 })}
                             />
-                            <p>{errors.phoneNumber?.message}</p>
+                            <p className="text-danger">{errors.phoneNumber?.message}</p>
                         </div>
                         <div className="form-group col-6">
                             <label htmlFor="address">{t('user:address')}:</label>
@@ -377,7 +377,7 @@ const UserManagePanel = (props: IProps) => {
                                     onChange: handleAddressChange,
                                 })}
                             />
-                            <p>{errors.address?.message}</p>
+                            <p className="text-danger">{errors.address?.message}</p>
                         </div>
                         <div className="form-group col-6">
                             <label htmlFor="role">{t('user:role')}:</label>
