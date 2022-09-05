@@ -18,6 +18,7 @@ import { ProductState } from '../../models/product';
 import { clearProducts, fetchProductsAsync } from '../../store/product/product.action';
 import { monthLabel } from '../../constants/commons';
 import { Bar } from 'react-chartjs-2';
+import i18n from '../../i18n';
 const DashBoard = () => {
     const { t } = useTranslation(['common', 'order', 'dashBoard']);
     const [isLoading, setIsLoading] = useState<boolean>(false);
@@ -105,6 +106,7 @@ const DashBoard = () => {
         fourMonthsAgoOrders,
         fiveMonthsAgoOrders,
         sixMonthsAgoOrders,
+        i18n.language,
     ]);
 
     const incomeData = useMemo(() => {
@@ -140,6 +142,7 @@ const DashBoard = () => {
         fourMonthsAgoOrders,
         fiveMonthsAgoOrders,
         sixMonthsAgoOrders,
+        i18n.language,
     ]);
 
     const totalProduct = useMemo(() => {
