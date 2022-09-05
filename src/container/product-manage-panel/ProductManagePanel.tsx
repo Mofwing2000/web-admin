@@ -67,10 +67,16 @@ const ProductManagePanel: FC<IProps> = (props) => {
             size: yup
                 .array()
                 .required(`${t('common:selectOneSize')}`)
+                .test(`${t('common:selectOneSize')}`, `${t('common:selectOneSize')}`, function (val) {
+                    return val?.filter((item) => item.isAvailable === false).length === 0;
+                })
                 .min(1, `${t('common:selectOneSize')}`),
             color: yup
                 .array()
                 .required(`${t('common:selectOneColor')}`)
+                .test(`${t('common:selectOneColor')}`, `${t('common:selectOneColor')}`, function (val) {
+                    return val?.filter((item) => item.isAvailable === false).length === 0;
+                })
                 .min(1, `${t('common:selectOneColor')}`),
         })
         .required();
@@ -470,9 +476,9 @@ const ProductManagePanel: FC<IProps> = (props) => {
                                     {...register('size')}
                                     name="size"
                                     type="checkbox"
-                                    value={item.sizeName}
+                                    defaultValue={item.sizeName}
                                     id={'size' + item.sizeName}
-                                    checked={item.isAvailable}
+                                    defaultChecked={item.isAvailable}
                                     onClick={() => handleSizeChange(index)}
                                 />
                                 <label className="form-check-label" htmlFor={'size' + item.sizeName}>
@@ -493,10 +499,10 @@ const ProductManagePanel: FC<IProps> = (props) => {
                                     {...register('color')}
                                     name="color"
                                     type="checkbox"
-                                    value={item.colorName}
+                                    defaultValue={item.colorName}
                                     id={'color' + item.colorName}
                                     onClick={() => handleColorChange(index)}
-                                    checked={item.isAvailable}
+                                    defaultChecked={item.isAvailable}
                                 />
                                 <label className="form-check-label" htmlFor={'color' + item.colorName}>
                                     {t(`product:${item.colorName}`)}
@@ -516,9 +522,9 @@ const ProductManagePanel: FC<IProps> = (props) => {
                                     // {...register('category')}
                                     name="category"
                                     type="checkbox"
-                                    value={item.categoryName}
+                                    defaultValue={item.categoryName}
                                     id={'category' + item.categoryName}
-                                    checked={item.isCategory}
+                                    defaultChecked={item.isCategory}
                                     onClick={() => handleCategoryChange(index)}
                                     disabled={item.categoryName === 'bottom' || item.categoryName === 'top'}
                                 />
@@ -553,7 +559,7 @@ const ProductManagePanel: FC<IProps> = (props) => {
                         <button
                             disabled={isLoading || isProductLoading}
                             className="btn btn-lg btn-secondary "
-                            onClick={() => navigate(-1)}
+                            onClick={() => navigate('/product')}
                         >
                             {t('common:close')}
                         </button>
