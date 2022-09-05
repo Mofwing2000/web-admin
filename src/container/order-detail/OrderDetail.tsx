@@ -219,7 +219,7 @@ const OrderDetail = () => {
                                     onClick={handleTrackingClick}
                                 >
                                     {(orderData.orderState === OrderState.CANCELED && (
-                                        <span className="text-danger">{t('order: canceled')}</span>
+                                        <span className="text-danger">{t('order:canceled')}</span>
                                     )) ||
                                         (orderData.orderState === OrderState.PENDING && (
                                             <span>
