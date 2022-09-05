@@ -292,6 +292,7 @@ const UserManagePanel = (props: IProps) => {
                                 className="form-control"
                                 id="email"
                                 // defaultValue={user.email}
+                                disabled
                                 value={userFormValue.email}
                                 aria-describedby="email"
                                 placeholder="abc@gmail.com"
