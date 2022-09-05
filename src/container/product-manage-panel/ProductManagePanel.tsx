@@ -28,6 +28,7 @@ import { useTranslation } from 'react-i18next';
 import { useAppDispatch, useAppSelector } from '../../helpers/hooks';
 import { addProductAsync, updateProductAsync } from '../../store/product/product.action';
 import { selectProduct } from '../../store/product/product.reducer';
+import { mixed } from 'yup/lib/locale';
 
 interface IProps {
     type: ProductAction;
@@ -439,7 +440,7 @@ const ProductManagePanel: FC<IProps> = (props) => {
                                 onChange: handleQuantityChange,
                             })}
                             type="number"
-                            className="form-control"
+                            className="manage-product__form__info__input__quantity form-control"
                             id="quantity"
                             value={productFormValue.quantity}
                             aria-describedby="quantity"
@@ -453,7 +454,7 @@ const ProductManagePanel: FC<IProps> = (props) => {
                                 onChange: handlePriceChange,
                             })}
                             type="number"
-                            className="form-control"
+                            className="manage-product__form__info__input__price form-control"
                             id="quantity"
                             value={productFormValue.price}
                             aria-describedby="quantity"
