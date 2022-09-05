@@ -157,7 +157,7 @@ const ProductProfile = () => {
                         <button
                             className="btn btn-secondary"
                             onClick={() => {
-                                navigate(-1);
+                                navigate('/product');
                             }}
                         >
                             {t('common:close')}
