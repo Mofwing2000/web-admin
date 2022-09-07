@@ -1,14 +1,11 @@
 import { FirebaseError } from '@firebase/util';
-import { collection, getDocs, onSnapshot, query, Timestamp } from 'firebase/firestore';
+import { collection, getDocs, query, Timestamp } from 'firebase/firestore';
 import React, { useEffect, useState, useMemo, useCallback, memo } from 'react';
 import { Chart as ChartJS, CategoryScale, LinearScale, BarElement, Title, Tooltip, Legend } from 'chart.js';
-import { Link, useNavigate } from 'react-router-dom';
+import { Link } from 'react-router-dom';
 import { toast } from 'react-toastify';
 import { db } from '../../config/firebase.config';
-import { Order, OrderState } from '../../models/order';
-import './dashboard.scss';
-import ReactTooltip from 'react-tooltip';
-import moment from 'moment';
+import { Order } from '../../models/order';
 import LoadingModal from '../../components/loading-modal/LoadingModal';
 import { useTranslation } from 'react-i18next';
 import OrderTable from '../../components/order-table/OrderTable';
@@ -19,8 +16,12 @@ import { clearProducts, fetchProductsAsync } from '../../store/product/product.a
 import { monthLabel } from '../../constants/commons';
 import { Bar } from 'react-chartjs-2';
 import i18n from '../../i18n';
+
+import './dashboard.scss';
+
 const DashBoard = () => {
     const { t } = useTranslation(['common', 'order', 'dashBoard']);
+    ChartJS.register(CategoryScale, LinearScale, BarElement, Title, Tooltip, Legend);
     const [isLoading, setIsLoading] = useState<boolean>(false);
     const [totalUser, setTotalUser] = useState<number>(0);
     const [totalOrder, setTotalOrder] = useState<number>(0);
@@ -32,9 +33,7 @@ const DashBoard = () => {
     const [fourMonthsAgoOrders, setFourMonthsAgoOrders] = useState<Order[]>([]);
     const [fiveMonthsAgoOrders, setFiveMonthsAgoOrders] = useState<Order[]>([]);
     const [sixMonthsAgoOrders, setSixMonthsAgoOrders] = useState<Order[]>([]);
-    const [tooltip, setTooltip] = useState<boolean>(false);
     const { products, isProductLoading } = useAppSelector<ProductState>(selectProduct);
-    ChartJS.register(CategoryScale, LinearScale, BarElement, Title, Tooltip, Legend);
     const totalOrderOptions = {
         responsive: true,
         plugins: {
@@ -59,8 +58,6 @@ const DashBoard = () => {
             },
         },
     };
-
-    const navigate = useNavigate();
     const dispatch = useAppDispatch();
     const productQuery = useMemo(() => query(collection(db, 'product')), []);
     const fetchUserQuery = useMemo(() => query(collection(db, 'user')), []);

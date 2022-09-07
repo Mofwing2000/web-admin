@@ -1,9 +1,7 @@
+import { AnyAction, PayloadAction } from '@reduxjs/toolkit';
 import { createReducer, Reducer } from 'typesafe-actions';
-import AuthState from '../../models/auth';
-import { ActionType } from 'typesafe-actions';
 import { User, UsersState } from '../../models/user';
 import { UserActionType } from '../../type/user-actions';
-import { AnyAction, PayloadAction } from '@reduxjs/toolkit';
 import { RootState } from '../store';
 
 const initState: UsersState = {

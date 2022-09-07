@@ -1,6 +1,5 @@
-import { collection, DocumentData, orderBy, query, QueryDocumentSnapshot } from 'firebase/firestore';
+import { collection, orderBy, query } from 'firebase/firestore';
 import React, { memo, useCallback, useEffect, useState } from 'react';
-import { useTranslation } from 'react-i18next';
 import LoadingModal from '../../components/loading-modal/LoadingModal';
 import OrderFilterBar from '../../components/order-filter-bar/OrderFilterBar';
 import OrderTable from '../../components/order-table/OrderTable';
@@ -19,7 +18,6 @@ const OrderManage = () => {
     const [sortOrder, setSortOrder] = useState<PageOrder>('asc');
     const [pageCount, setPageCount] = useState<number>(0);
     const [itemOffset, setItemOffset] = useState<number>(0);
-    const { t } = useTranslation(['common', 'order']);
     const [currentFilteredOrder, setCurrentFilteredOrder] = useState<Order[]>([]);
     const dispatch = useAppDispatch();
 

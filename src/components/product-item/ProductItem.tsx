@@ -3,7 +3,7 @@ import { Product } from '../../models/product';
 import './product-item.scss';
 import { DEFAULT_PRODUCT_PHOTO_URL as defaultPhotoImg } from '../../constants/commons';
 import { Link } from 'react-router-dom';
-import { useDispatch } from 'react-redux';
+
 interface IProps {
     product: Product;
 }

@@ -1,9 +1,10 @@
 import React, { memo, useCallback, useState } from 'react';
 import { Order, OrderState } from '../../models/order';
-import { Link, useNavigate } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { firebaseDateFormat } from '../../helpers/common';
 import ReactTooltip from 'react-tooltip';
+
 interface Iprops {
     ordersData: Order[];
 }
@@ -13,9 +14,11 @@ const OrderTable = (props: Iprops) => {
     const [tooltip, setTooltip] = useState<boolean>(false);
     const navigate = useNavigate();
     const { t } = useTranslation(['common', 'order']);
+
     const handleView = useCallback((data: Order) => {
         navigate(`/order/detail/${data.id}`);
     }, []);
+
     return (
         <div className="order-table table-responsive-sm">
             <table className="order-table table table-bordered mt-3">

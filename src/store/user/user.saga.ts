@@ -1,6 +1,6 @@
 import { FirebaseError } from '@firebase/util';
 import { call, put, takeEvery } from '@redux-saga/core/effects';
-import { doc, DocumentData, DocumentReference, getDoc, getDocs, Query, query, updateDoc } from 'firebase/firestore';
+import { doc, DocumentData, DocumentReference, getDoc, updateDoc } from 'firebase/firestore';
 import { toast } from 'react-toastify';
 import { db } from '../../config/firebase.config';
 import i18n from '../../i18n';

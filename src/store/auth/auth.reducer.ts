@@ -1,5 +1,4 @@
 import { AnyAction, PayloadAction } from '@reduxjs/toolkit';
-import { User } from 'firebase/auth';
 import { createReducer, Reducer } from 'typesafe-actions';
 import AuthState from '../../models/auth';
 import { AuthActionsType } from '../../type/auth';

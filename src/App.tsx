@@ -3,6 +3,8 @@ import { Route, Routes } from 'react-router-dom';
 import { ToastContainer } from 'react-toastify';
 import DashBoard from './container/dashboard/DashBoard';
 import EditUserProfile from './container/edit-user-profile/EditUserProfile';
+import OrderDetail from './container/order-detail/OrderDetail';
+import OrderManage from './container/order-manage/OrderManage';
 import ProductEdit from './container/product-edit/ProductEdit';
 import ProductManage from './container/product-manage/ProductManage';
 import ProductProfile from './container/product-profile/ProductProfile';
@@ -15,18 +17,14 @@ import Login from './pages/Login';
 import AdminRoute from './routes/AdminRoute';
 import PrivateRoute from './routes/PrivateRoute';
 import { selectDarkMode } from './store/dark-mode/dark-mode.reducer';
-import OrderDetail from './container/order-detail/OrderDetail';
-import OrderManage from './container/order-manage/OrderManage';
+import CollectionEdit from './container/collection-edit/CollectionEdit';
+import CollectionManage from './container/collection-manage/CollectionManage';
+import CollectionView from './container/collection-view/CollectionView';
+import ForgotPassword from './container/ForgotPassword';
 
 import 'react-toastify/dist/ReactToastify.css';
 import 'swiper/css';
 import './App.scss';
-import CollectionManagePanel from './container/collection-manage-panel/CollectionManagePanel';
-import { CollectionAction } from './type/collection-manage';
-import CollectionView from './container/collection-view/CollectionView';
-import ForgotPassword from './container/ForgotPassword';
-import CollectionManage from './container/collection-manage/CollectionManage';
-import CollectionEdit from './container/collection-edit/CollectionEdit';
 
 function App() {
     const { mode } = useAppSelector<any>(selectDarkMode) as DisplayModeState;

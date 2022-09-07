@@ -1,4 +1,4 @@
-import { DocumentData, DocumentReference, Query } from 'firebase/firestore';
+import { DocumentData, Query } from 'firebase/firestore';
 import { createAction, createAsyncAction } from 'typesafe-actions';
 import { Collection } from '../../models/collection';
 import { CollectionActionType } from '../../type/collection-actions';

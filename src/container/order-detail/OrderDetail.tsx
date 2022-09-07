@@ -1,20 +1,20 @@
 import { FirebaseError } from '@firebase/util';
-import { getDoc, doc, updateDoc, onSnapshot, Timestamp, runTransaction } from 'firebase/firestore';
+import { yupResolver } from '@hookform/resolvers/yup';
+import { doc, getDoc, onSnapshot, runTransaction, updateDoc } from 'firebase/firestore';
 import React, { useCallback, useEffect, useRef, useState } from 'react';
+import { useForm } from 'react-hook-form';
+import { useTranslation } from 'react-i18next';
 import { useParams } from 'react-router-dom';
 import { toast } from 'react-toastify';
+import * as yup from 'yup';
 import LoadingModal from '../../components/loading-modal/LoadingModal';
 import { db } from '../../config/firebase.config';
+import { firebaseDateFormat } from '../../helpers/common';
 import { Order, OrderState } from '../../models/order';
 import { Bottom, Top } from '../../models/product';
 import { User } from '../../models/user';
-import * as yup from 'yup';
+
 import './order-detail.scss';
-import { useForm } from 'react-hook-form';
-import { yupResolver } from '@hookform/resolvers/yup';
-import moment from 'moment';
-import { useTranslation } from 'react-i18next';
-import { firebaseDateFormat } from '../../helpers/common';
 
 interface FormValues {
     tracking: string;

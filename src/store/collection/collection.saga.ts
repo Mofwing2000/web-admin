@@ -1,17 +1,6 @@
 import { FirebaseError } from '@firebase/util';
 import { call, put, takeEvery } from '@redux-saga/core/effects';
-import {
-    addDoc,
-    collection,
-    doc,
-    DocumentData,
-    getDocs,
-    Query,
-    query,
-    setDoc,
-    updateDoc,
-    writeBatch,
-} from 'firebase/firestore';
+import { collection, doc, DocumentData, getDocs, Query, setDoc, updateDoc, writeBatch } from 'firebase/firestore';
 import { toast } from 'react-toastify';
 import { db } from '../../config/firebase.config';
 import { Collection } from '../../models/collection';

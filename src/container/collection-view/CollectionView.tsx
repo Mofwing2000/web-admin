@@ -1,8 +1,8 @@
 import { FirebaseError } from '@firebase/util';
 import { collection, doc, getDoc, query } from 'firebase/firestore';
-import React, { memo, useCallback, useEffect, useMemo, useState } from 'react';
+import React, { memo, useEffect, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { Link, useNavigate, useParams } from 'react-router-dom';
+import { useNavigate, useParams } from 'react-router-dom';
 import { toast } from 'react-toastify';
 import LoadingModal from '../../components/loading-modal/LoadingModal';
 import ProductItem from '../../components/product-item/ProductItem';
@@ -10,18 +10,18 @@ import { db } from '../../config/firebase.config';
 import { useAppDispatch, useAppSelector } from '../../helpers/hooks';
 import { Collection } from '../../models/collection';
 import { ProductState } from '../../models/product';
-import { UserState } from '../../models/user';
 import { clearProducts, fetchProductsAsync } from '../../store/product/product.action';
 import { selectProduct } from '../../store/product/product.reducer';
-import { selectUser } from '../../store/user/user.reducer';
+
 import './collection-view.scss';
+
 const CollectionView = () => {
     const [collectionData, setCollectionData] = useState<Collection>();
     const [isLoading, setIsLoading] = useState<boolean>(false);
     const { collectionId } = useParams();
     const { t } = useTranslation(['common', 'product']);
     const { products, isProductLoading } = useAppSelector<ProductState>(selectProduct);
-    const { user } = useAppSelector<UserState>(selectUser);
+
     const dispatch = useAppDispatch();
     const navigate = useNavigate();
 

@@ -1,13 +1,12 @@
 import { FirebaseError } from '@firebase/util';
 import { call, put, takeEvery } from '@redux-saga/core/effects';
-import { createUserWithEmailAndPassword, signInWithEmailAndPassword } from 'firebase/auth';
-import { doc, getDoc, setDoc } from 'firebase/firestore';
+import { signInWithEmailAndPassword } from 'firebase/auth';
+import { doc, getDoc } from 'firebase/firestore';
 import { toast } from 'react-toastify';
 import { push } from 'redux-first-history';
 import auth, { db } from '../../config/firebase.config';
-import { loginAsync } from './auth.action';
-import { DEFAULT_USER_PHOTO_URL as defaultAvatar } from '../../constants/commons';
 import { User } from '../../models/user';
+import { loginAsync } from './auth.action';
 
 import { fetchUserAsync } from '../user/user.action';
 

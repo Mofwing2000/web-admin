@@ -1,34 +1,31 @@
 import { yupResolver } from '@hookform/resolvers/yup';
+import cuid from 'cuid';
+import { getDownloadURL, ref, uploadBytesResumable } from 'firebase/storage';
 import React, { FC, useCallback, useEffect, useMemo, useState } from 'react';
 import { useForm } from 'react-hook-form';
-import { ref, uploadBytesResumable, getDownloadURL } from 'firebase/storage';
-import auth, { storage, db } from '../../config/firebase.config';
-import cuid from 'cuid';
+import { useTranslation } from 'react-i18next';
+import { useNavigate } from 'react-router-dom';
+import { toast } from 'react-toastify';
 import * as yup from 'yup';
+import LoadingModal from '../../components/loading-modal/LoadingModal';
+import { storage } from '../../config/firebase.config';
+import { DEFAULT_PRODUCT_PHOTO_URL as defaultPhotoUrl } from '../../constants/commons';
+import { useAppDispatch, useAppSelector } from '../../helpers/hooks';
 import {
-    ProductType,
-    Top,
     Bottom,
-    Color,
-    TopCategory,
     BottomCategory,
-    Size,
+    Color,
     Product,
     ProductState,
+    ProductType,
+    Top,
+    TopCategory,
 } from '../../models/product';
-import { DEFAULT_PRODUCT_PHOTO_URL as defaultPhotoUrl } from '../../constants/commons';
-import './product-manage-panel.scss';
-import { doc, setDoc, updateDoc } from 'firebase/firestore';
-import { useNavigate } from 'react-router-dom';
-import { ProductAction } from '../../type/product-manage';
-import { toast } from 'react-toastify';
-import { FirebaseError } from '@firebase/util';
-import LoadingModal from '../../components/loading-modal/LoadingModal';
-import { useTranslation } from 'react-i18next';
-import { useAppDispatch, useAppSelector } from '../../helpers/hooks';
 import { addProductAsync, updateProductAsync } from '../../store/product/product.action';
 import { selectProduct } from '../../store/product/product.reducer';
-import { mixed } from 'yup/lib/locale';
+import { ProductAction } from '../../type/product-manage';
+
+import './product-manage-panel.scss';
 
 interface IProps {
     type: ProductAction;
@@ -43,10 +40,6 @@ interface FormValue {
     size: Product['size'];
     color: Product['color'];
 }
-
-// const imageFrame = () => {
-
-// }
 
 const ProductManagePanel: FC<IProps> = (props) => {
     const { t } = useTranslation(['common', 'product']);
@@ -386,7 +379,6 @@ const ProductManagePanel: FC<IProps> = (props) => {
                                                 <i
                                                     className="manage-product__form__upload__gallery__grid__item__close fa-solid fa-xmark position-absolute top-0 end-0 fs-5 text-danger"
                                                     onClick={() => {
-                                                        console.log(index);
                                                         const splicedArr = [...productFormValue.photoUrls];
                                                         splicedArr.splice(index, 1);
                                                         setProductFormValue((prev) => {

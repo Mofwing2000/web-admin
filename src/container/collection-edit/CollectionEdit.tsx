@@ -1,7 +1,5 @@
 import React, { memo, useEffect, useState } from 'react';
-import { User } from '../../models/user';
-import { useLocation, useParams } from 'react-router-dom';
-import ProductManagePanel from '../product-manage-panel/ProductManagePanel';
+import { useParams } from 'react-router-dom';
 import { getDoc, doc } from 'firebase/firestore';
 import { db } from '../../config/firebase.config';
 import { Collection } from '../../models/collection';
@@ -12,6 +10,7 @@ import { CollectionAction } from '../../type/collection-manage';
 const CollectionEdit = () => {
     const { collectionId } = useParams();
     const [collectionValue, setCollectionValue] = useState<Collection>();
+
     useEffect(() => {
         const fetch = async () => {
             const docRef = doc(db, 'collection', collectionId as string);
@@ -20,6 +19,7 @@ const CollectionEdit = () => {
         };
         fetch();
     }, []);
+
     return (
         <div className="position-relative">
             {collectionValue ? (

@@ -1,9 +1,8 @@
 import { FirebaseError } from '@firebase/util';
 import { call, put, takeEvery } from '@redux-saga/core/effects';
-import { DocumentData, getDocs, Query, query } from 'firebase/firestore';
+import { DocumentData, getDocs, Query } from 'firebase/firestore';
 import { toast } from 'react-toastify';
 import { Order } from '../../models/order';
-import { Top, Bottom } from '../../models/product';
 import { fetchOrdersAsync } from './order.action';
 
 async function fetchOrders(dataQuery: Query<DocumentData>) {

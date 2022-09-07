@@ -1,11 +1,10 @@
-import { collection, doc, onSnapshot, query, setDoc, updateDoc } from 'firebase/firestore';
+import { collection, query } from 'firebase/firestore';
 import React, { FC, memo, useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { db, storage } from '../../config/firebase.config';
 import { Top, Bottom, ProductState } from '../../models/product';
 import ReactTooltip from 'react-tooltip';
 import { useNavigate } from 'react-router-dom';
-import './collection-manage-panel.scss';
 import cuid from 'cuid';
 import { DEFAULT_COLLECTION_PHOTO_URL as defaultCollectionBanner } from '../../constants/commons';
 import { getDownloadURL, ref, uploadBytesResumable } from 'firebase/storage';
@@ -21,6 +20,8 @@ import { useAppDispatch, useAppSelector } from '../../helpers/hooks';
 import { selectProduct } from '../../store/product/product.reducer';
 import { fetchProductsAsync } from '../../store/product/product.action';
 import { addCollectionAsync, updateColllectionAsync } from '../../store/collection/collection.action';
+
+import './collection-manage-panel.scss';
 
 interface IProps {
     action: CollectionAction;
@@ -83,8 +84,7 @@ const CollectionManagePanel: FC<IProps> = (props) => {
         register,
         handleSubmit,
         reset,
-        formState,
-        formState: { errors, isSubmitSuccessful },
+        formState: { errors },
     } = useForm<FormValue>({
         resolver: yupResolver(schema),
         defaultValues: { ...defaultFormValue },

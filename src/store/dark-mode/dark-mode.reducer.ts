@@ -1,7 +1,7 @@
 import { AnyAction } from 'redux';
 import { createReducer, Reducer } from 'typesafe-actions';
 import { DisplayModeState } from '../../models/display-mode';
-import { DarkModeActionsType, DisplayMode } from '../../type/display-mode';
+import { DarkModeActionsType } from '../../type/display-mode';
 import { RootState } from '../store';
 
 const initialState: DisplayModeState = {

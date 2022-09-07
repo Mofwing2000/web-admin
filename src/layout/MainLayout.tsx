@@ -19,11 +19,6 @@ const MainLayout = () => {
                 </div>
             </main>
             <Footer />
-
-            {/* <Routes>
-                <Route path="/dashboard" element={<DashBoard />}></Route>
-                <Route path="/user" element={<User />}></Route>
-            </Routes> */}
         </>
     );
 };

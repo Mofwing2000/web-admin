@@ -1,10 +1,10 @@
-import React, { memo, useEffect, useState } from 'react';
-import { User } from '../../models/user';
-import { useParams } from 'react-router-dom';
-import UserManagePanel from '../user-manage-panel/UserManagePanel';
-import { getDoc, doc } from 'firebase/firestore';
-import { db } from '../../config/firebase.config';
+import { doc, getDoc } from 'firebase/firestore';
+import { memo, useEffect, useState } from 'react';
+import React, { useParams } from 'react-router-dom';
 import LoadingModal from '../../components/loading-modal/LoadingModal';
+import { db } from '../../config/firebase.config';
+import { User } from '../../models/user';
+import UserManagePanel from '../user-manage-panel/UserManagePanel';
 
 const EditUserProfile = () => {
     const { userId } = useParams();

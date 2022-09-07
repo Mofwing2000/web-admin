@@ -1,25 +1,10 @@
 import { FirebaseError } from '@firebase/util';
-import { call, put, select, takeEvery } from '@redux-saga/core/effects';
-import {
-    addDoc,
-    collection,
-    doc,
-    DocumentData,
-    DocumentReference,
-    getDoc,
-    getDocs,
-    Query,
-    query,
-    setDoc,
-    updateDoc,
-    writeBatch,
-} from 'firebase/firestore';
+import { call, put, takeEvery } from '@redux-saga/core/effects';
+import { collection, doc, DocumentData, getDocs, Query, setDoc, updateDoc, writeBatch } from 'firebase/firestore';
 import { toast } from 'react-toastify';
 import { db } from '../../config/firebase.config';
-import i18n from '../../i18n';
-import { User, UsersState } from '../../models/user';
+import { User } from '../../models/user';
 import { addUsersAsync, deleteUsersAsync, fetchUsersAsync, updateUsersAsync } from './users.action';
-import { selectUsers } from './users.reducer';
 
 async function fetchUsers(docQuery: Query<DocumentData>) {
     const docSnap = await getDocs(docQuery);

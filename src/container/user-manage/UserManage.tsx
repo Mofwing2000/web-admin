@@ -1,39 +1,24 @@
-import React, { useCallback, useEffect, useMemo, useState } from 'react';
-import {
-    collection,
-    deleteDoc,
-    doc,
-    DocumentData,
-    endBefore,
-    limit,
-    limitToLast,
-    onSnapshot,
-    orderBy,
-    query,
-    QueryDocumentSnapshot,
-    startAfter,
-} from 'firebase/firestore';
-import { useNavigate } from 'react-router-dom';
-import Pagination from '../../components/pagination/Pagination';
-import { db } from '../../config/firebase.config';
-import { User, UsersState, UserState } from '../../models/user';
-import { PageLimit, PageOrder, PageUserSort } from '../../type/page-type';
-import UserManagePanel from '../user-manage-panel/UserManagePanel';
-import './user-manage.scss';
 import { FirebaseError } from '@firebase/util';
+import { collection, deleteDoc, doc, orderBy, query } from 'firebase/firestore';
+import React, { useCallback, useEffect, useMemo, useState } from 'react';
+import { useTranslation } from 'react-i18next';
+import { useNavigate } from 'react-router-dom';
 import { toast } from 'react-toastify';
 import ReactTooltip from 'react-tooltip';
 import LoadingModal from '../../components/loading-modal/LoadingModal';
-import { useTranslation } from 'react-i18next';
+import Pagination from '../../components/pagination/Pagination';
+import { db } from '../../config/firebase.config';
 import { useAppDispatch, useAppSelector } from '../../helpers/hooks';
-import { selectUsers } from '../../store/users/users.reducer';
+import { User, UsersState } from '../../models/user';
 import { clearUsers, fetchUsersAsync } from '../../store/users/users.action';
+import { selectUsers } from '../../store/users/users.reducer';
+import { PageLimit, PageOrder, PageUserSort } from '../../type/page-type';
+import UserManagePanel from '../user-manage-panel/UserManagePanel';
+
+import './user-manage.scss';
 
 const UserManage = () => {
     const { users, isUserLoading } = useAppSelector<UsersState>(selectUsers);
-    const [lastDoc, setLastDoc] = useState<QueryDocumentSnapshot<DocumentData>>();
-    const [firstDoc, setFirstDoc] = useState<QueryDocumentSnapshot<DocumentData>>();
-    const [curPage, setCurPage] = useState<number>(1);
     const [pageSize, setPageSize] = useState<PageLimit>(10);
     const [sortType, setSortType] = useState<PageUserSort>('id');
     const [sortOrder, setSortOrder] = useState<PageOrder>('asc');
@@ -335,7 +320,7 @@ const UserManage = () => {
                     </div>
                 </div>
             </div>
-            {isLoading && <LoadingModal />}
+            {(isLoading || isUserLoading) && <LoadingModal />}
         </div>
     );
 };

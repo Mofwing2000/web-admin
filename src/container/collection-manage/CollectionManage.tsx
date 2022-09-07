@@ -8,16 +8,13 @@ import { db } from '../../config/firebase.config';
 import { firebaseDateFormatDateOnly } from '../../helpers/common';
 import { useAppDispatch, useAppSelector } from '../../helpers/hooks';
 import { Collection, CollectionState } from '../../models/collection';
-import {
-    clearCollection,
-    deleteColllectionAsync,
-    fetchColllectionsAsync,
-} from '../../store/collection/collection.action';
+import { deleteColllectionAsync, fetchColllectionsAsync } from '../../store/collection/collection.action';
 import { selectCollection } from '../../store/collection/collection.reducer';
-import './collection-manage.scss';
-import '../../sass/common.scss';
 import CollectionManagePanel from '../collection-manage-panel/CollectionManagePanel';
 import { CollectionAction } from '../../type/collection-manage';
+
+import './collection-manage.scss';
+import '../../sass/common.scss';
 
 const CollectionManage = () => {
     const { t } = useTranslation(['common', 'collection']);
@@ -34,12 +31,8 @@ const CollectionManage = () => {
     }, []);
 
     const handleCollectionDelete = useCallback(async () => {
-        console.log('delete');
-        console.log(editingItem);
         if (editingItem) {
-            console.log(editingItem);
             dispatch(deleteColllectionAsync.request(editingItem));
-            console.log('delete');
         }
         setEditingItem(null);
     }, [editingItem]);

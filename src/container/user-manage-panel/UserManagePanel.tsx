@@ -2,7 +2,6 @@ import { FirebaseError } from '@firebase/util';
 import { yupResolver } from '@hookform/resolvers/yup';
 import cuid from 'cuid';
 import { createUserWithEmailAndPassword } from 'firebase/auth';
-import { doc, setDoc, updateDoc } from 'firebase/firestore';
 import { getDownloadURL, ref, uploadBytesResumable } from 'firebase/storage';
 import React, { useCallback, useEffect, useState } from 'react';
 import { useForm } from 'react-hook-form';
@@ -11,13 +10,15 @@ import { useNavigate } from 'react-router-dom';
 import { toast } from 'react-toastify';
 import * as yup from 'yup';
 import LoadingModal from '../../components/loading-modal/LoadingModal';
-import auth, { db, storage } from '../../config/firebase.config';
+import auth, { storage } from '../../config/firebase.config';
 import { DEFAULT_USER_PHOTO_URL as defaultPhotoUrl } from '../../constants/commons';
 import { useAppDispatch, useAppSelector } from '../../helpers/hooks';
 import { User, UsersState } from '../../models/user';
 import { addUsersAsync, updateUsersAsync } from '../../store/users/users.action';
 import { selectUsers } from '../../store/users/users.reducer';
+
 import './user-manage-panel.scss';
+
 interface IProps {
     type: 'add' | 'update';
     data?: User;
@@ -105,8 +106,7 @@ const UserManagePanel = (props: IProps) => {
         register,
         handleSubmit,
         reset,
-        formState,
-        formState: { errors, isSubmitSuccessful },
+        formState: { errors },
     } = useForm<FormValue>({
         resolver: yupResolver(schema),
         defaultValues: { ...defaultFormValue },
@@ -220,13 +220,7 @@ const UserManagePanel = (props: IProps) => {
         reset({ ...defaultFormValue });
     }, [userFormValue]);
 
-    // useEffect(() => {
-    //     setUserFormValue({ ...user });
-    // }, [props]);
-
     const updateUser = useCallback(async () => {
-        console.log(userFormValue);
-
         dispatch(
             updateUsersAsync.request({
                 ...userFormValue,

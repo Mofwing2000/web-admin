@@ -9,6 +9,7 @@ import { db } from '../../config/firebase.config';
 import { useAppSelector } from '../../helpers/hooks';
 import { User, UserState } from '../../models/user';
 import { selectUser } from '../../store/user/user.reducer';
+
 import './user-profile.scss';
 const UserProfile = () => {
     const { t } = useTranslation(['common', 'user']);
@@ -99,7 +100,7 @@ const UserProfile = () => {
                     <p>{t('common:noData')}</p>
                 </div>
             )}
-            {isLoading && <LoadingModal />}
+            {(isLoading || isUserLoading) && <LoadingModal />}
         </>
     );
 };

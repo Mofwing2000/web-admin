@@ -1,6 +1,5 @@
 import createSagaMiddleware from '@redux-saga/core';
 import { configureStore } from '@reduxjs/toolkit';
-import { authenticateSaga } from './auth/auth.saga';
 // import { authenticateSaga } from '../app/saga/authenticate.saga';
 import rootReducer from './root-reducer';
 import rootSaga from './rootSaga';

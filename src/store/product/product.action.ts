@@ -1,6 +1,6 @@
 import { DocumentData, Query } from 'firebase/firestore';
 import { createAction, createAsyncAction } from 'typesafe-actions';
-import { Bottom, Product, Top } from '../../models/product';
+import { Bottom, Top } from '../../models/product';
 import { ProductActionType } from '../../type/product-actions';
 
 export const fetchProductsAsync = createAsyncAction(

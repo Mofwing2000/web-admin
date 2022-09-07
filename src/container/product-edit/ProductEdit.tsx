@@ -1,15 +1,15 @@
+import { doc, getDoc } from 'firebase/firestore';
 import React, { memo, useEffect, useState } from 'react';
-import { User } from '../../models/user';
-import { useLocation, useParams } from 'react-router-dom';
-import ProductManagePanel from '../product-manage-panel/ProductManagePanel';
-import { getDoc, doc } from 'firebase/firestore';
+import { useParams } from 'react-router-dom';
+import LoadingModal from '../../components/loading-modal/LoadingModal';
 import { db } from '../../config/firebase.config';
 import { Bottom, Top } from '../../models/product';
-import LoadingModal from '../../components/loading-modal/LoadingModal';
+import ProductManagePanel from '../product-manage-panel/ProductManagePanel';
 
 const ProductEdit = () => {
     const { productId } = useParams();
     const [productValue, setProductValue] = useState<Top | Bottom>();
+
     useEffect(() => {
         const fetch = async () => {
             const docRef = doc(db, 'product', productId as string);
@@ -18,6 +18,7 @@ const ProductEdit = () => {
         };
         fetch();
     }, []);
+
     return (
         <div className="position-relative">
             {productValue ? (

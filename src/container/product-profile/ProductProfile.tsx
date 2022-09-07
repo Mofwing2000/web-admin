@@ -1,20 +1,19 @@
+import { doc, getDoc } from 'firebase/firestore';
 import React, { useEffect, useState } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
-import { getDoc, doc } from 'firebase/firestore';
+import SwiperCore, { Autoplay, FreeMode, Navigation, Thumbs } from 'swiper';
+import { Swiper, SwiperSlide } from 'swiper/react';
+import LoadingModal from '../../components/loading-modal/LoadingModal';
 import { db } from '../../config/firebase.config';
 import { Bottom, Top } from '../../models/product';
-import LoadingModal from '../../components/loading-modal/LoadingModal';
-import { FreeMode, Navigation, Thumbs } from 'swiper';
-import { Swiper, SwiperSlide } from 'swiper/react';
-import SwiperCore, { Autoplay } from 'swiper';
+import { FirebaseError } from '@firebase/util';
+import { useTranslation } from 'react-i18next';
+import { toast } from 'react-toastify';
+
 import 'swiper/css/free-mode';
 import 'swiper/css/navigation';
 import 'swiper/css/thumbs';
-
 import './product-profile.scss';
-import { FirebaseError } from '@firebase/util';
-import { toast } from 'react-toastify';
-import { useTranslation } from 'react-i18next';
 
 const ProductProfile = () => {
     const { t } = useTranslation(['common', 'product']);

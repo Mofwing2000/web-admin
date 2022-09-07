@@ -4,12 +4,10 @@ import { sendPasswordResetEmail } from 'firebase/auth';
 import React, { useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { useTranslation } from 'react-i18next';
-import { Link } from 'react-router-dom';
 import { toast } from 'react-toastify';
 import * as yup from 'yup';
 import LoadingModal from '../components/loading-modal/LoadingModal';
 import auth from '../config/firebase.config';
-import { useAppDispatch } from '../helpers/hooks';
 import { ForgotPasswordInput } from '../models/form';
 
 const ForgotPassword = () => {
@@ -24,7 +22,6 @@ const ForgotPassword = () => {
                 .email(`${t('common:validEmail')}`),
         })
         .required();
-    const dispatch = useAppDispatch();
     const {
         register,
         handleSubmit,

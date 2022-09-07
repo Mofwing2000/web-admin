@@ -1,10 +1,12 @@
 import React, { memo } from 'react';
 import { Link } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
-import './side_bar.scss';
 import { useAppSelector } from '../../helpers/hooks';
 import { UserState } from '../../models/user';
 import { selectUser } from '../../store/user/user.reducer';
+
+import './side_bar.scss';
+
 const SideBar = () => {
     const { t } = useTranslation(['sidebar']);
     const { user } = useAppSelector<UserState>(selectUser);

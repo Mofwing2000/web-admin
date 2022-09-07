@@ -14,6 +14,7 @@ interface IProps {
 const ProductFilterBar: FC<IProps> = (props) => {
     const { pageSize, sortType, sortOrder, setPageSize, setSortType, setSortOrder } = props;
     const { t } = useTranslation(['common', 'product']);
+
     return (
         <div className="product-filter-bar mb-5">
             <div className="product-filter-bar__control d-block d-md-flex gap-5 ">

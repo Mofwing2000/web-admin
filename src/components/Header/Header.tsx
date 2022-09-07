@@ -9,7 +9,9 @@ import { UserState } from '../../models/user';
 import { logout } from '../../store/auth/auth.action';
 import { toggleDarkMode } from '../../store/dark-mode/dark-mode.action';
 import { selectUser } from '../../store/user/user.reducer';
+
 import './header.scss';
+
 const Header = () => {
     const { user } = useAppSelector<UserState>(selectUser);
     const dispatch = useAppDispatch();

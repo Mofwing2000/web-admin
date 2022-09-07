@@ -1,4 +1,3 @@
-import { DocumentData } from 'firebase/firestore';
 import { UserRole } from '../type/user-type';
 
 export interface User {

@@ -1,22 +1,7 @@
-import { FirebaseError } from '@firebase/util';
-import {
-    collection,
-    deleteDoc,
-    doc,
-    DocumentData,
-    endBefore,
-    limit,
-    limitToLast,
-    onSnapshot,
-    orderBy,
-    query,
-    QueryDocumentSnapshot,
-    startAfter,
-} from 'firebase/firestore';
+import { collection, orderBy, query } from 'firebase/firestore';
 import React, { memo, useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Link, useNavigate } from 'react-router-dom';
-import { toast } from 'react-toastify';
 import ReactTooltip from 'react-tooltip';
 import LoadingModal from '../../components/loading-modal/LoadingModal';
 import Pagination from '../../components/pagination/Pagination';
@@ -24,12 +9,12 @@ import ProductFilterBar from '../../components/product-filter-bar/ProductFilterB
 import { db } from '../../config/firebase.config';
 import { useAppDispatch, useAppSelector } from '../../helpers/hooks';
 import { Bottom, ProductState, ProductType, Top } from '../../models/product';
-import { fetchOrdersAsync } from '../../store/order/order.action';
 import { clearProducts, deleteProductAsync, fetchProductsAsync } from '../../store/product/product.action';
 import { selectProduct } from '../../store/product/product.reducer';
 import { PageLimit, PageOrder, PageProductSort } from '../../type/page-type';
 import { ProductAction } from '../../type/product-manage';
 import ProductManagePanel from '../product-manage-panel/ProductManagePanel';
+
 import './product-management.scss';
 
 const ProductManage = () => {
@@ -78,8 +63,6 @@ const ProductManage = () => {
     useEffect(() => {
         if (products.length) {
             const endOffset = itemOffset + pageSize;
-            console.log(products);
-
             setCurrentFilteredProduct(products.slice(itemOffset, endOffset));
             setPageCount(Math.ceil(products.length / pageSize));
         }

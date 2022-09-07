@@ -1,9 +1,7 @@
+import { AnyAction, PayloadAction } from '@reduxjs/toolkit';
 import { createReducer, Reducer } from 'typesafe-actions';
-import AuthState from '../../models/auth';
-import { ActionType } from 'typesafe-actions';
 import { Collection, CollectionState } from '../../models/collection';
 import { CollectionActionType } from '../../type/collection-actions';
-import { AnyAction, PayloadAction } from '@reduxjs/toolkit';
 import { RootState } from '../store';
 
 const initState: CollectionState = {

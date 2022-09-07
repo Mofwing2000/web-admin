@@ -1,5 +1,4 @@
 import React, { FC, memo } from 'react';
-import { useTranslation } from 'react-i18next';
 import ReactPaginate, { ReactPaginateProps } from 'react-paginate';
 import './pagination.scss';
 
@@ -9,8 +8,8 @@ interface PaginationProps {
 }
 
 const Pagination: FC<PaginationProps> = (props) => {
-    const { t } = useTranslation(['common']);
     const { onPageChange, pageCount } = props;
+
     return (
         <ReactPaginate
             breakLabel="..."
