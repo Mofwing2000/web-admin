@@ -65,14 +65,7 @@ function App() {
                                 }
                             ></Route>
                             <Route path="view/:userId/*" element={<UserProfile />}></Route>
-                            <Route
-                                path="edit/:userId/*"
-                                element={
-                                    <AdminRoute>
-                                        <EditUserProfile />
-                                    </AdminRoute>
-                                }
-                            ></Route>
+                            <Route path="edit/:userId/*" element={<EditUserProfile />}></Route>
                         </Route>
                         <Route path="product">
                             <Route index element={<ProductManage />}></Route>

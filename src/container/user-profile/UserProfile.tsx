@@ -74,26 +74,24 @@ const UserProfile = () => {
                             </div>
                         </div>
                     </div>
-                    {user.role === 'admin' && (
-                        <div className="user-profile__navigate mt-5 d-flex d-flex justify-content-center align-items-center gap-3">
-                            <button
-                                className="btn btn-primary"
-                                onClick={() => {
-                                    navigate(`/user/edit/${userData.id}`);
-                                }}
-                            >
-                                {t('common:edit')}
-                            </button>
-                            <button
-                                className="btn btn-secondary"
-                                onClick={() => {
-                                    navigate(-1);
-                                }}
-                            >
-                                {t('common:close')}
-                            </button>
-                        </div>
-                    )}
+                    <div className="user-profile__navigate mt-5 d-flex d-flex justify-content-center align-items-center gap-3">
+                        <button
+                            className="btn btn-primary"
+                            onClick={() => {
+                                navigate(`/user/edit/${userData.id}`);
+                            }}
+                        >
+                            {t('common:edit')}
+                        </button>
+                        <button
+                            className="btn btn-secondary"
+                            onClick={() => {
+                                navigate(-1);
+                            }}
+                        >
+                            {t('common:close')}
+                        </button>
+                    </div>
                 </div>
             ) : (
                 <div className="user-profile text-center">

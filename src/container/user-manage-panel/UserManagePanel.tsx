@@ -13,9 +13,9 @@ import LoadingModal from '../../components/loading-modal/LoadingModal';
 import auth, { storage } from '../../config/firebase.config';
 import { DEFAULT_USER_PHOTO_URL as defaultPhotoUrl } from '../../constants/commons';
 import { useAppDispatch, useAppSelector } from '../../helpers/hooks';
-import { User, UsersState } from '../../models/user';
+import { User, UserState } from '../../models/user';
+import { selectUser } from '../../store/user/user.reducer';
 import { addUsersAsync, updateUsersAsync } from '../../store/users/users.action';
-import { selectUsers } from '../../store/users/users.reducer';
 
 import './user-manage-panel.scss';
 
@@ -35,6 +35,7 @@ interface FormValue {
 
 const UserManagePanel = (props: IProps) => {
     const { t } = useTranslation(['common', 'user']);
+    const { user, isUserLoading } = useAppSelector<UserState>(selectUser);
     const schema = yup
         .object({
             email: yup
@@ -74,7 +75,6 @@ const UserManagePanel = (props: IProps) => {
 
     const [avatar, setAvatar] = useState<File>();
     const [isLoading, setIsLoading] = useState<boolean>(false);
-    const { isUserLoading } = useAppSelector<UsersState>(selectUsers);
     const dispatch = useAppDispatch();
     const defaultUser: User = {
         id: '',
@@ -89,18 +89,18 @@ const UserManagePanel = (props: IProps) => {
         createdAt: new Date(),
     };
     const navigate = useNavigate();
-    const user: User = props.data
+    const userData: User = props.data
         ? {
               ...props.data,
           }
         : { ...defaultUser };
     const defaultFormValue = {
-        email: user.email,
-        firstName: user.firstName,
-        lastName: user.lastName,
-        password: user.password,
-        phoneNumber: user.phoneNumber,
-        address: user.address,
+        email: userData.email,
+        firstName: userData.firstName,
+        lastName: userData.lastName,
+        password: userData.password,
+        phoneNumber: userData.phoneNumber,
+        address: userData.address,
     };
     const {
         register,
@@ -111,7 +111,7 @@ const UserManagePanel = (props: IProps) => {
         resolver: yupResolver(schema),
         defaultValues: { ...defaultFormValue },
     });
-    const [userFormValue, setUserFormValue] = useState<User>(user);
+    const [userFormValue, setUserFormValue] = useState<User>(userData);
 
     const isFileImage = useCallback((file: File) => {
         return file && file.type.split('/')[0] === 'image';
@@ -246,6 +246,12 @@ const UserManagePanel = (props: IProps) => {
         uploadAvatar();
     }, [avatar]);
 
+    useEffect(() => {
+        if (user && userData) {
+            if (user.role !== 'admin' && user.id !== userData.id) navigate('/product');
+        }
+    }, [user, userData]);
+
     return (
         <>
             <div className="manage-user card">
@@ -254,7 +260,9 @@ const UserManagePanel = (props: IProps) => {
                         <div
                             className="manage-user__form__upload__img overflow-hidden d-flex justify-content-center align-items-center"
                             style={{
-                                backgroundImage: `url(${userFormValue.photoUrl || user.photoUrl || defaultPhotoUrl})`,
+                                backgroundImage: `url(${
+                                    userFormValue.photoUrl || userData.photoUrl || defaultPhotoUrl
+                                })`,
                             }}
                         ></div>
                         <div className="manage-user__form__upload__control ">
@@ -285,7 +293,7 @@ const UserManagePanel = (props: IProps) => {
                                 type="email"
                                 className="form-control"
                                 id="email"
-                                // defaultValue={user.email}
+                                // defaultValue={userData.email}
                                 disabled={props.type === 'update'}
                                 value={userFormValue.email}
                                 aria-describedby="email"
@@ -299,7 +307,7 @@ const UserManagePanel = (props: IProps) => {
                                 type="password"
                                 className="form-control"
                                 id="password"
-                                // defaultValue={user.password}
+                                // defaultValue={userData.password}
                                 value={userFormValue.password}
                                 aria-describedby="password"
                                 {...register('password', {
@@ -315,7 +323,7 @@ const UserManagePanel = (props: IProps) => {
                                 type="text"
                                 className="form-control"
                                 id="firstName"
-                                // defaultValue={user.firstName}
+                                // defaultValue={userData.firstName}
                                 value={userFormValue.firstName}
                                 aria-describedby="fist name"
                                 placeholder="John"
@@ -331,7 +339,7 @@ const UserManagePanel = (props: IProps) => {
                                 type="text"
                                 className="form-control"
                                 id="lastName"
-                                // defaultValue={user.lastName}
+                                // defaultValue={userData.lastName}
                                 value={userFormValue.lastName}
                                 aria-describedby="last name"
                                 placeholder="Wick"
@@ -347,7 +355,7 @@ const UserManagePanel = (props: IProps) => {
                                 type="text"
                                 className="form-control"
                                 id="phone"
-                                // defaultValue={user.phoneNumber}
+                                // defaultValue={userData.phoneNumber}
                                 value={userFormValue.phoneNumber}
                                 aria-describedby="phone number"
                                 placeholder="0921341215"
@@ -363,7 +371,7 @@ const UserManagePanel = (props: IProps) => {
                                 type="text"
                                 className="form-control"
                                 id="address"
-                                // defaultValue={user.address}
+                                // defaultValue={userData.address}
                                 value={userFormValue.address}
                                 aria-describedby="address"
                                 placeholder="Hanoi"
@@ -379,8 +387,9 @@ const UserManagePanel = (props: IProps) => {
                                 id="role"
                                 className="form-select col-6"
                                 aria-label="role-select"
-                                // defaultValue={user.role || 'customer'}
+                                // defaultValue={userData.role || 'customer'}
                                 value={userFormValue.role}
+                                disabled={user !== null && user.role !== 'admin'}
                                 // {...register('role', {
                                 //     ,
                                 // })}
