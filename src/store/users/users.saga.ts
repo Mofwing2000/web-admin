@@ -3,6 +3,7 @@ import { call, put, takeEvery } from '@redux-saga/core/effects';
 import { collection, doc, DocumentData, getDocs, Query, setDoc, updateDoc, writeBatch } from 'firebase/firestore';
 import { toast } from 'react-toastify';
 import { db } from '../../config/firebase.config';
+import i18n from '../../i18n';
 import { User } from '../../models/user';
 import { addUsersAsync, deleteUsersAsync, fetchUsersAsync, updateUsersAsync } from './users.action';
 
@@ -46,6 +47,8 @@ function* updateUsersGen(action: ReturnType<typeof updateUsersAsync.request>) {
         const user = action.payload;
         const users: User[] = yield call(updateUsers, user);
         yield put(updateUsersAsync.success(users));
+        if (i18n.language === 'en') toast.success('Update profile succeed');
+        else if (i18n.language === 'vn') toast.success('Cập nhật thông tin thành công');
     } catch (error) {
         if (error instanceof FirebaseError) {
             toast.error(error.message);
@@ -72,6 +75,8 @@ function* deleteUsersGen(action: ReturnType<typeof deleteUsersAsync.request>) {
         const id = action.payload;
         const users: User[] = yield call(deleteUsers, id);
         yield put(deleteUsersAsync.success(users));
+        if (i18n.language === 'en') toast.success('Delete user succeed');
+        else if (i18n.language === 'vn') toast.success('Xóa người dùng thành công');
     } catch (error) {
         if (error instanceof FirebaseError) {
             toast.error(error.message);
@@ -97,6 +102,8 @@ function* addUsersGen(action: ReturnType<typeof addUsersAsync.request>) {
         const user = action.payload;
         const users: User[] = yield call(addUsers, user);
         yield put(addUsersAsync.success(users));
+        if (i18n.language === 'en') toast.success('Add user succeed');
+        else if (i18n.language === 'vn') toast.success('Xóa người dùng thành công');
     } catch (error) {
         if (error instanceof FirebaseError) {
             toast.error(error.message);
