@@ -193,7 +193,6 @@ const CollectionManagePanel: FC<IProps> = (props) => {
             //     createdAt: new Date(Date.now()),
             // });
             setIsLoading(false);
-            toast.success(`${t('common:addCollectionSucceed')}`);
             setBanner(undefined);
             setCollectionValue({ ...defaultCollection });
             reset({ ...defaultFormValue });
@@ -202,7 +201,7 @@ const CollectionManagePanel: FC<IProps> = (props) => {
             setIsLoading(false);
             if (error instanceof FirebaseError) toast(error.message);
         }
-    }, []);
+    }, [collectionValue]);
 
     const updateCollection = useCallback(async () => {
         dispatch(
@@ -211,8 +210,7 @@ const CollectionManagePanel: FC<IProps> = (props) => {
             }),
         );
         setIsLoading(false);
-        toast.success(`${t('common:updateCollectionSucceed')}`);
-    }, []);
+    }, [collectionValue]);
 
     const onSubmit = useCallback(async () => {
         setIsLoading(true);
@@ -221,6 +219,7 @@ const CollectionManagePanel: FC<IProps> = (props) => {
             setIsLoading(false);
             return;
         }
+
         if (action === CollectionAction.ADD) await addCollection();
         else if (action === CollectionAction.UPDATE) await updateCollection();
     }, [collectionValue]);
