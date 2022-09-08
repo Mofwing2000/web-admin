@@ -231,12 +231,10 @@ const UserManagePanel = (props: IProps) => {
         setIsLoading(true);
         if (props.type === 'add') {
             await addUser();
-            toast.success('common:addUserSucceed');
             setIsLoading(false);
             navigate('/user');
         } else if (props.type === 'update') {
             await updateUser();
-            toast.success('common:updateUserSucceed');
             setIsLoading(false);
             navigate('/user');
         }
