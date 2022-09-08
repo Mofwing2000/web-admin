@@ -20,6 +20,7 @@ const OrderManage = () => {
     const [itemOffset, setItemOffset] = useState<number>(0);
     const [currentFilteredOrder, setCurrentFilteredOrder] = useState<Order[]>([]);
     const dispatch = useAppDispatch();
+    const [currentPage, setCurrentPage] = useState<number>(0);
 
     const handlePageClick = useCallback(
         (event: { selected: number }) => {
@@ -27,6 +28,7 @@ const OrderManage = () => {
                 const newOffset = (event.selected * pageSize) % orders.length;
                 setItemOffset(newOffset);
             }
+            setCurrentPage(event.selected);
         },
         [orders],
     );
@@ -49,7 +51,7 @@ const OrderManage = () => {
 
     return (
         <>
-            {currentFilteredOrder && currentFilteredOrder.length ? (
+            {currentFilteredOrder ? (
                 <div className="order-manage">
                     <div className="order-manage__filter">
                         <div className="order-manage__filter__control d-flex gap-5 mt-5">
@@ -60,6 +62,7 @@ const OrderManage = () => {
                                 setPageSize={setPageSize}
                                 setSortType={setSortType}
                                 setSortOrder={setSortOrder}
+                                setPage={handlePageClick}
                             />
                         </div>
                     </div>
@@ -67,7 +70,9 @@ const OrderManage = () => {
                         {currentFilteredOrder && <OrderTable ordersData={currentFilteredOrder} />}
                     </div>
                     <div className="order-manage__table__pagination">
-                        {orders && <Pagination onPageChange={handlePageClick} pageCount={pageCount} />}
+                        {orders && (
+                            <Pagination onPageChange={handlePageClick} pageCount={pageCount} curPage={currentPage} />
+                        )}
                     </div>
                 </div>
             ) : (

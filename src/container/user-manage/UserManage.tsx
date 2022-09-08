@@ -32,6 +32,7 @@ const UserManage = () => {
     const [currentFilteredUsers, setCurrentFilteredUsers] = useState<User[]>([]);
     const navigate = useNavigate();
     const dispatch = useAppDispatch();
+    const [currentPage, setCurrentPage] = useState<number>(0);
     const handleUserDelete = useCallback(async () => {
         setIsLoading(true);
         if (editingItem)
@@ -52,6 +53,7 @@ const UserManage = () => {
                 const newOffset = (event.selected * pageSize) % users.length;
                 setItemOffset(newOffset);
             }
+            setCurrentPage(event.selected);
         },
         [users],
     );
@@ -287,7 +289,9 @@ const UserManage = () => {
                 </table>
             </div>
             <div className="user-manage__table__pagination">
-                {currentFilteredUsers && <Pagination onPageChange={handlePageClick} pageCount={pageCount} />}
+                {currentFilteredUsers && (
+                    <Pagination onPageChange={handlePageClick} pageCount={pageCount} curPage={currentPage} />
+                )}
             </div>
             <div className="modal" id="confirmModal">
                 <div className="modal-dialog modal-dialog-centered">

@@ -34,6 +34,7 @@ const ProductManage = () => {
     const searchResultRef = useRef<HTMLUListElement>(null);
     const navigate = useNavigate();
     const dispatch = useAppDispatch();
+    const [currentPage, setCurrentPage] = useState<number>(0);
     const filterQuery = useMemo(
         () => query(collection(db, 'product'), orderBy(sortType, sortOrder)),
         [sortType, sortOrder],
@@ -56,6 +57,7 @@ const ProductManage = () => {
                 const newOffset = (event.selected * pageSize) % products.length;
                 setItemOffset(newOffset);
             }
+            setCurrentPage(event.selected);
         },
         [products],
     );
@@ -384,7 +386,9 @@ const ProductManage = () => {
                     </table>
                 </div>
                 <div className="product-manage__table__pagination">
-                    {currentFilteredProduct && <Pagination onPageChange={handlePageClick} pageCount={pageCount} />}
+                    {currentFilteredProduct && (
+                        <Pagination onPageChange={handlePageClick} pageCount={pageCount} curPage={currentPage} />
+                    )}
                 </div>
             </div>
             <div className="modal" id="confirmModal">

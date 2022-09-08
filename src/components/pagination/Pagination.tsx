@@ -5,10 +5,11 @@ import './pagination.scss';
 interface PaginationProps {
     onPageChange: ReactPaginateProps['onPageChange'];
     pageCount: ReactPaginateProps['pageCount'];
+    curPage: ReactPaginateProps['forcePage'];
 }
 
 const Pagination: FC<PaginationProps> = (props) => {
-    const { onPageChange, pageCount } = props;
+    const { onPageChange, pageCount, curPage } = props;
 
     return (
         <ReactPaginate
@@ -25,6 +26,7 @@ const Pagination: FC<PaginationProps> = (props) => {
             nextLinkClassName="pagination__next-page fw-bold"
             pageClassName="pagination__item"
             containerClassName="pagination__container"
+            forcePage={curPage}
         />
     );
 };
