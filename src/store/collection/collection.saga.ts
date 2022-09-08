@@ -3,6 +3,7 @@ import { call, put, takeEvery } from '@redux-saga/core/effects';
 import { collection, doc, DocumentData, getDocs, Query, setDoc, updateDoc, writeBatch } from 'firebase/firestore';
 import { toast } from 'react-toastify';
 import { db } from '../../config/firebase.config';
+import i18n from '../../i18n';
 import { Collection } from '../../models/collection';
 import {
     addCollectionAsync,
@@ -50,6 +51,8 @@ function* addColllectionGen(action: ReturnType<typeof addCollectionAsync.request
         const collectionData = action.payload;
         const list: Collection[] = yield call(addColllection, collectionData);
         yield put(addCollectionAsync.success(list));
+        if (i18n.language === 'en') toast.success('Add collection succeed');
+        else if (i18n.language === 'vn') toast.success('Thêm bộ sưu tập thành công');
     } catch (error) {
         if (error instanceof FirebaseError) {
             toast.error(error.message);
@@ -75,6 +78,8 @@ function* updateColllectionGen(action: ReturnType<typeof updateColllectionAsync.
         const collectionData = action.payload;
         const list: Collection[] = yield call(updateColllection, collectionData);
         yield put(updateColllectionAsync.success(list));
+        if (i18n.language === 'en') toast.success('Update collection succeed');
+        else if (i18n.language === 'vn') toast.success('Cập nhật bộ sưu tập thành công');
     } catch (error) {
         if (error instanceof FirebaseError) {
             toast.error(error.message);
@@ -101,6 +106,8 @@ function* deleteColllectionGen(action: ReturnType<typeof deleteColllectionAsync.
         const id = action.payload;
         const list: Collection[] = yield call(deleteColllection, id);
         yield put(deleteColllectionAsync.success(list));
+        if (i18n.language === 'en') toast.success('Delete collection succeed');
+        else if (i18n.language === 'vn') toast.success('Xóa bộ sưu tập thành công');
     } catch (error) {
         if (error instanceof FirebaseError) {
             toast.error(error.message);

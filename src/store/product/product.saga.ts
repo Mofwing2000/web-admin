@@ -3,6 +3,7 @@ import { call, put, takeEvery } from '@redux-saga/core/effects';
 import { collection, doc, DocumentData, getDocs, Query, setDoc, updateDoc, writeBatch } from 'firebase/firestore';
 import { toast } from 'react-toastify';
 import { db } from '../../config/firebase.config';
+import i18n from '../../i18n';
 import { Bottom, Top } from '../../models/product';
 import { addProductAsync, deleteProductAsync, fetchProductsAsync, updateProductAsync } from './product.action';
 
@@ -45,7 +46,8 @@ function* addProductGen(action: ReturnType<typeof addProductAsync.request>) {
         const productData = action.payload;
         const list: (Top | Bottom)[] = yield call(addProduct, productData);
         yield put(addProductAsync.success(list));
-        toast.success('Add product succeed');
+        if (i18n.language === 'en') toast.success('Add product succeed');
+        else if (i18n.language === 'vn') toast.success('Thêm sản phẩm thành công');
     } catch (error) {
         if (error instanceof FirebaseError) {
             toast.error(error.message);
@@ -71,6 +73,8 @@ function* updateProductGen(action: ReturnType<typeof updateProductAsync.request>
         const productData = action.payload;
         const list: (Top | Bottom)[] = yield call(updateProduct, productData);
         yield put(updateProductAsync.success(list));
+        if (i18n.language === 'en') toast.success('Update product succeed');
+        else if (i18n.language === 'vn') toast.success('Cập nhật sản phẩm thành công');
     } catch (error) {
         if (error instanceof FirebaseError) {
             toast.error(error.message);
@@ -97,6 +101,8 @@ function* deleteProductGen(action: ReturnType<typeof deleteProductAsync.request>
         const id = action.payload;
         const list: (Top | Bottom)[] = yield call(deleteProduct, id);
         yield put(deleteProductAsync.success(list));
+        if (i18n.language === 'en') toast.success('Delete product succeed');
+        else if (i18n.language === 'vn') toast.success('Xóa sản phẩm thành công');
     } catch (error) {
         if (error instanceof FirebaseError) {
             toast.error(error.message);
