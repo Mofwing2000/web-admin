@@ -61,7 +61,7 @@ const ForgotPassword = () => {
                     <div className="col-12 col-md-8 col-lg-6 col-xl-5">
                         <div className="card shadow-2-strong">
                             <form className="card-body p-5" onSubmit={handleSubmit(onSubmit)} noValidate>
-                                <h3 className="mb-5 text-center">Sign in</h3>
+                                <h3 className="mb-5 text-center">{t('common:forgotPassword')}</h3>
                                 <div className="form-outline mb-4">
                                     <label className="form-label justify-content-start" htmlFor="typeEmailX-2">
                                         Email
