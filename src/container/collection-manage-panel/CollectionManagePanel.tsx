@@ -426,10 +426,9 @@ const CollectionManagePanel: FC<IProps> = (props) => {
                         <button
                             disabled={isLoading || isLoading}
                             className="btn btn-lg btn-secondary "
-                            type="submit"
                             onClick={(e) => {
                                 e.preventDefault();
-                                navigate(-1);
+                                navigate('../../../collection');
                             }}
                         >
                             {t('common:cancel')}

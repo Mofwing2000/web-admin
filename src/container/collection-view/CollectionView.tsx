@@ -102,7 +102,7 @@ const CollectionView = () => {
                         <button
                             className="btn btn-secondary"
                             onClick={() => {
-                                navigate(-1);
+                                navigate('../../collection');
                             }}
                         >
                             {t('common:close')}
