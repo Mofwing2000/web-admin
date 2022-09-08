@@ -61,7 +61,7 @@ async function updateProduct(productData: Top | Bottom) {
         ...productData,
     });
     const list: (Top | Bottom)[] = [];
-    const querySnapShot = await getDocs(collection(db, 'collection'));
+    const querySnapShot = await getDocs(collection(db, 'product'));
     querySnapShot.forEach((docItem) => {
         list.push(docItem.data() as Top | Bottom);
     });
