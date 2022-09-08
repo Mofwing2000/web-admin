@@ -13,21 +13,21 @@ const initState: OrdersState = {
 const ordersReducer: Reducer<OrdersState, AnyAction> = createReducer(initState)
     .handleAction(OrderActionType.FETCH_ORDERS_START, (state: OrdersState) => ({
         ...state,
-        isProductLoading: true,
+        isOrdersLoading: true,
     }))
     .handleAction(OrderActionType.FETCH_ORDERS_SUCCEED, (state: OrdersState, action: PayloadAction<Order[]>) => ({
         ...state,
-        isProductLoading: false,
+        isOrdersLoading: false,
         orders: action.payload,
     }))
     .handleAction(OrderActionType.FETCH_ORDERS_FAILED, (state: OrdersState, action: PayloadAction<string>) => ({
         ...state,
-        isProductLoading: false,
+        isOrdersLoading: false,
         error: action.payload,
     }))
     .handleAction(OrderActionType.CLEAR_ORDERS, (state: OrdersState) => ({
         ...state,
-        isProductLoading: false,
+        isOrdersLoading: false,
         error: '',
         orders: [],
     }));
