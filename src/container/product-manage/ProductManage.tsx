@@ -185,6 +185,7 @@ const ProductManage = () => {
                         setPageSize={setPageSize}
                         setSortType={setSortType}
                         setSortOrder={setSortOrder}
+                        setPage={handlePageClick}
                     />
                 </div>
                 <div className="product-manage__table table-responsive-sm">
