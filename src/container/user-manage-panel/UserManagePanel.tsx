@@ -14,6 +14,7 @@ import auth, { storage } from '../../config/firebase.config';
 import { DEFAULT_USER_PHOTO_URL as defaultPhotoUrl } from '../../constants/commons';
 import { useAppDispatch, useAppSelector } from '../../helpers/hooks';
 import { User, UserState } from '../../models/user';
+import { updateUserAsync } from '../../store/user/user.action';
 import { selectUser } from '../../store/user/user.reducer';
 import { addUsersAsync, updateUsersAsync } from '../../store/users/users.action';
 
@@ -220,9 +221,16 @@ const UserManagePanel = (props: IProps) => {
         reset({ ...defaultFormValue });
     }, [userFormValue]);
 
-    const updateUser = useCallback(async () => {
+    const updateUsers = useCallback(async () => {
         dispatch(
             updateUsersAsync.request({
+                ...userFormValue,
+            }),
+        );
+    }, [userFormValue]);
+    const updateUser = useCallback(async () => {
+        dispatch(
+            updateUserAsync.request({
                 ...userFormValue,
             }),
         );
@@ -232,11 +240,10 @@ const UserManagePanel = (props: IProps) => {
         if (props.type === 'add') {
             await addUser();
             setIsLoading(false);
-            navigate('/user');
         } else if (props.type === 'update') {
-            await updateUser();
+            if (userData.id === user?.id) await updateUser();
+            else await updateUsers();
             setIsLoading(false);
-            navigate('/user');
         }
     }, [props.type, userFormValue]);
 
@@ -308,6 +315,7 @@ const UserManagePanel = (props: IProps) => {
                                 // defaultValue={userData.password}
                                 value={userFormValue.password}
                                 aria-describedby="password"
+                                disabled={userData.id !== user?.id && props.type === 'update'}
                                 {...register('password', {
                                     onChange: handlePasswordChange,
                                 })}
