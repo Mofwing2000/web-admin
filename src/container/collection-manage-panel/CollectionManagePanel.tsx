@@ -269,7 +269,7 @@ const CollectionManagePanel: FC<IProps> = (props) => {
                                 aria-describedby="title"
                                 placeholder="Summer collection 2022"
                             />
-                            {<p>{errors.title?.message}</p>}
+                            {<p className="text-danger">{errors.title?.message}</p>}
                         </div>
                         <div className=" col-12 col-xl-8">
                             <textarea
@@ -282,7 +282,7 @@ const CollectionManagePanel: FC<IProps> = (props) => {
                                 placeholder={t('common:description')}
                                 id="product-desc"
                             ></textarea>
-                            {<p>{errors.description?.message}</p>}
+                            {<p className="text-danger">{errors.description?.message}</p>}
                         </div>
                     </div>
                     <div className="collection__products d-flex align-items-center flex-column mt-5">

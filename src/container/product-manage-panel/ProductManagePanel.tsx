@@ -429,7 +429,7 @@ const ProductManagePanel: FC<IProps> = (props) => {
                             aria-describedby="name"
                             placeholder="Super cool shirt"
                         />
-                        {<p>{errors.name?.message}</p>}
+                        {<p className="text-danger">{errors.name?.message}</p>}
                     </div>
                     <div className="manage-product__form__info__input form-group col-2 ">
                         <label htmlFor="quantity">{t('product:quantity')}:</label>
@@ -443,7 +443,7 @@ const ProductManagePanel: FC<IProps> = (props) => {
                             value={productFormValue.quantity}
                             aria-describedby="quantity"
                         />
-                        {<p>{errors.name?.message}</p>}
+                        {<p className="text-danger">{errors.name?.message}</p>}
                     </div>
                     <div className="manage-product__form__info__input form-group col-2 ">
                         <label htmlFor="quantity">{t('product:price')}:</label>
@@ -457,7 +457,7 @@ const ProductManagePanel: FC<IProps> = (props) => {
                             value={productFormValue.price}
                             aria-describedby="quantity"
                         />
-                        {<p>{errors.name?.message}</p>}
+                        {<p className="text-danger">{errors.name?.message}</p>}
                     </div>
                     <div className="manage-product__form__info__input form-group row col-4 mx-0">
                         <label>{t('product:size')}:</label>
@@ -479,7 +479,7 @@ const ProductManagePanel: FC<IProps> = (props) => {
                             </div>
                         ))}
 
-                        {<p>{errors.size?.message}</p>}
+                        {<p className="text-danger">{errors.size?.message}</p>}
                     </div>
 
                     <div className="manage-product__form__info__input form-group col-4 row mx-0">
@@ -502,7 +502,7 @@ const ProductManagePanel: FC<IProps> = (props) => {
                             </div>
                         ))}
 
-                        {<p>{errors.color?.message}</p>}
+                        {<p className="text-danger">{errors.color?.message}</p>}
                     </div>
 
                     <div className="manage-product__form__info__input form-group row col-4 mx-0">
@@ -540,7 +540,7 @@ const ProductManagePanel: FC<IProps> = (props) => {
                             style={{ height: '400px' }}
                         ></textarea>
                         <label htmlFor="product-desc">Description</label>
-                        {<p>{errors.description?.message}</p>}
+                        {<p className="text-danger">{errors.description?.message}</p>}
                     </div>
                 </div>
                 <div className="manage-product__form__buttons d-flex mt-5 justify-content-center align-items-center gap-3">
