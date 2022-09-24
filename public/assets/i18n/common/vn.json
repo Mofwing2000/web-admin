@@ -52,5 +52,8 @@
     "September": "Tháng 9",
     "October": "Tháng 10",
     "November": "Tháng 11",
-    "December": "Tháng 12"
+    "December": "Tháng 12",
+    "confirmEmailSent": "Tin nhắn xác nhận đã được gủi đến email của bạn",
+    "noPermission": "Tài khoản của bạn không được truy cập trang web",
+    "latestOrders": "Các đơn hàng mới nhất"
 }

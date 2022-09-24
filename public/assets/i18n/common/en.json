@@ -52,5 +52,8 @@
     "September": "September",
     "October": "October",
     "November": "November",
-    "December": "December"
+    "December": "December",
+    "confirmEmailSent": "A confirm message has been send to your email",
+    "noPermission": "The account does not have permission to access",
+    "latestOrders": "Latest orders"
 }
