@@ -1,0 +1,25 @@
+@use '../../sass/style.scss' as *;
+.order-manage {
+    &__search {
+        margin-bottom: 50px;
+
+        // &:hover &__list {
+        //     display: flex;
+        // }
+
+        &__list {
+            display: none;
+            background-color: $background-2;
+            width: 100%;
+            top: 100%;
+            left: 0;
+            &__item {
+                transition: all 0.3s 0s ease;
+                list-style: none;
+                &:hover {
+                    background-color: $background;
+                }
+            }
+        }
+    }
+}
