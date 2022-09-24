@@ -13,7 +13,7 @@ import UserProfile from './container/user-profile/UserProfile';
 import { useAppSelector } from './helpers/hooks';
 import MainLayout from './layout/MainLayout';
 import { DisplayModeState } from './models/display-mode';
-import Login from './pages/Login';
+import Login from './pages/login/Login';
 import AdminRoute from './routes/AdminRoute';
 import PrivateRoute from './routes/PrivateRoute';
 import { selectDarkMode } from './store/dark-mode/dark-mode.reducer';
