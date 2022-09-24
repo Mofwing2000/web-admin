@@ -1,16 +1,14 @@
-import { FirebaseError } from '@firebase/util';
-import { collection, deleteDoc, doc, orderBy, query } from 'firebase/firestore';
-import React, { useCallback, useEffect, useMemo, useState } from 'react';
+import { collection, orderBy, query } from 'firebase/firestore';
+import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { useNavigate } from 'react-router-dom';
-import { toast } from 'react-toastify';
+import { Link, useNavigate } from 'react-router-dom';
 import ReactTooltip from 'react-tooltip';
 import LoadingModal from '../../components/loading-modal/LoadingModal';
 import Pagination from '../../components/pagination/Pagination';
 import { db } from '../../config/firebase.config';
 import { useAppDispatch, useAppSelector } from '../../helpers/hooks';
 import { User, UsersState } from '../../models/user';
-import { clearUsers, fetchUsersAsync } from '../../store/users/users.action';
+import { clearUsers, deleteUsersAsync, fetchUsersAsync } from '../../store/users/users.action';
 import { selectUsers } from '../../store/users/users.reducer';
 import { PageLimit, PageOrder, PageUserSort } from '../../type/page-type';
 import UserManagePanel from '../user-manage-panel/UserManagePanel';
@@ -24,7 +22,6 @@ const UserManage = () => {
     const [sortOrder, setSortOrder] = useState<PageOrder>('asc');
     const [isEditing, setIsEditing] = useState<Boolean>(false);
     const [editingItem, setEditingItem] = useState<null | string>(null);
-    const [isLoading, setIsLoading] = useState<boolean>();
     const [pageCount, setPageCount] = useState<number>(0);
     const [itemOffset, setItemOffset] = useState<number>(0);
     const [tooltip, setTooltip] = useState<boolean>(false);
@@ -33,17 +30,19 @@ const UserManage = () => {
     const navigate = useNavigate();
     const dispatch = useAppDispatch();
     const [currentPage, setCurrentPage] = useState<number>(0);
+    const [searchValue, setSearchValue] = useState<string>();
+    const searchResultRef = useRef<HTMLUListElement>(null);
+
     const handleUserDelete = useCallback(async () => {
-        setIsLoading(true);
-        if (editingItem)
-            try {
-                await deleteDoc(doc(db, 'user', editingItem));
-                setIsLoading(false);
-                toast.success(t('common:deleteProductSucceed'));
-            } catch (error) {
-                setIsLoading(false);
-                if (error instanceof FirebaseError) toast.error(error.message);
-            }
+        if (editingItem) dispatch(deleteUsersAsync.request(editingItem));
+        // try {
+        //     await deleteDoc(doc(db, 'user', editingItem));
+        //     setIsLoading(false);
+        //     toast.success(t('common:deleteProductSucceed'));
+        // } catch (error) {
+        //     setIsLoading(false);
+        //     if (error instanceof FirebaseError) toast.error(error.message);
+        // }
         setEditingItem(null);
     }, [editingItem]);
 
@@ -79,6 +78,66 @@ const UserManage = () => {
     }, [pageSize, sortType, sortOrder]);
     return (
         <div className="user-manage">
+            <div className="row d-flex justify-content-end">
+                <div className="col-xl-3 col-4">
+                    <div className="user-manage__search input-group position-relative">
+                        <input
+                            type="search"
+                            className="form-control"
+                            aria-describedby="search"
+                            value={searchValue}
+                            onChange={(e) => setSearchValue(e.target.value)}
+                            onFocus={() => {
+                                searchResultRef.current!.style.display = 'flex';
+                            }}
+                            onBlur={() => {
+                                searchResultRef.current!.style.display = 'none';
+                            }}
+                        />
+                        <span className="input-group-text">
+                            <i className="fa fa-search" id="search"></i>
+                        </span>
+                        <ul
+                            className="user-manage__search__list position-absolute light-bg w-100 justify-content-center align-items-center flex-column"
+                            ref={searchResultRef}
+                            onMouseDown={(e) => e.preventDefault()}
+                        >
+                            {useMemo(
+                                () =>
+                                    searchValue &&
+                                    users &&
+                                    users
+                                        .filter(
+                                            (user) =>
+                                                user.firstName &&
+                                                user.lastName &&
+                                                (user.firstName + ' ' + user.lastName)
+                                                    .toLowerCase()
+                                                    .includes(searchValue.toLowerCase()),
+                                        )
+                                        .slice(0, 5)
+                                        .map((user, index) => (
+                                            <li key={index} className="user-manage__search__list__item row p-3 w-100">
+                                                <div className="col-3">
+                                                    <div
+                                                        className="user-manage__search__list__item__image"
+                                                        style={{ backgroundImage: `url(${user.photoUrl})` }}
+                                                    ></div>
+                                                </div>
+
+                                                <div className="user-manage__search__list__item__content col-9 d-flex justify-content-between">
+                                                    <Link to={`view/${user.id}`} replace={true}>
+                                                        <p className="fw-bold">{user.firstName + '' + user.lastName}</p>
+                                                    </Link>
+                                                </div>
+                                            </li>
+                                        )),
+                                [users, searchValue],
+                            )}
+                        </ul>
+                    </div>
+                </div>
+            </div>
             <div className="user-manage__add position-relative">
                 {isEditing ? (
                     <UserManagePanel type="add" />
@@ -324,7 +383,7 @@ const UserManage = () => {
                     </div>
                 </div>
             </div>
-            {(isLoading || isUserLoading) && <LoadingModal />}
+            {isUserLoading && <LoadingModal />}
         </div>
     );
 };
