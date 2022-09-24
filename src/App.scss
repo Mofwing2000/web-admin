@@ -5,7 +5,7 @@
 [data-theme='dark'] {
     background-color: $dark-background;
     color: $white-color;
-    .card {
+    .card:not(.dashboard__cards__item) {
         background-color: $heading-color-2;
     }
     .table {

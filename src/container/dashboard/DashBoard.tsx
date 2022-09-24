@@ -254,19 +254,19 @@ const DashBoard = () => {
             <div className="dashboard ">
                 <div className="dashboard__cards row gy-2 mb-5">
                     <div className="col-xl-3 col-lg-6">
-                        <div className="dashboard__cards__item dashboard__cards__item__user card ">
+                        <div className="dashboard__cards__item dashboard__cards__item__user card text-white">
                             <h5 className="dashboard__cards__item__title fw-bold mb-3 text-uppercase">
                                 {t('dashBoard:totalUser')}
                             </h5>
-                            <p className="dashboard__cards__item__count fs-5 text-white">{totalUser}</p>
-                            <div className="d-flex justify-content-between text-white">
+                            <p className="dashboard__cards__item__count fs-5 ">{totalUser}</p>
+                            <div className="d-flex justify-content-between">
                                 <Link to="/user">{t('dashBoard:viewUsersList')}</Link>
                                 <i className="fa-solid fa-user"></i>
                             </div>
                         </div>
                     </div>
                     <div className="col-xl-3 col-lg-6">
-                        <div className="dashboard__cards__item dashboard__cards__item__product card ">
+                        <div className="dashboard__cards__item dashboard__cards__item__product card text-white">
                             <h5 className="dashboard__cards__item__title fw-bold mb-3 text-uppercase">
                                 {t('dashBoard:totalProduct')}
                             </h5>
@@ -278,7 +278,7 @@ const DashBoard = () => {
                         </div>
                     </div>
                     <div className="col-xl-3 col-lg-6">
-                        <div className="dashboard__cards__item dashboard__cards__item__order card ">
+                        <div className="dashboard__cards__item dashboard__cards__item__order card text-white">
                             <h5 className="dashboard__cards__item__title fw-bold mb-3 text-uppercase">
                                 {t('dashBoard:totalOrder')}
                             </h5>
@@ -290,7 +290,7 @@ const DashBoard = () => {
                         </div>
                     </div>
                     <div className="col-xl-3 col-lg-6">
-                        <div className="dashboard__cards__item dashboard__cards__item__income card ">
+                        <div className="dashboard__cards__item dashboard__cards__item__income card text-white">
                             <h5 className="dashboard__cards__item__title fw-bold mb-3 text-uppercase">
                                 {t('dashBoard:totalIncome')}
                             </h5>
@@ -304,7 +304,7 @@ const DashBoard = () => {
                     <div className="row">
                         <h3 className="text-center mt-5">{t('dashBoard:thisMonthStatistic')}</h3>
                         <div className="col-4 d-flex flex-grow-1 align-items-center">
-                            <div className="dashboard__cards__item card w-100">
+                            <div className="dashboard__cards__item dashboard__cards__item__monthly-statistic card w-100">
                                 <h5 className="dashboard__cards__item__title fw-bold mb-3 text-uppercase">
                                     {t('dashBoard:totalOrder')}
                                 </h5>

@@ -9,18 +9,19 @@
             border-radius: 10px;
             box-shadow: $box-shadow;
             &__user.card {
-                background-color: #00aeef;
+                background-color: #321fdb;
             }
             &__product.card {
-                background-color: #3bd949;
+                background-color: #39f;
             }
             &__order.card {
-                background-color: #0d6efd;
+                background-color: #f9b115;
             }
             &__income.card {
-                background-color: #ffc107;
+                background-color: #e55353;
             }
-            &__title {
+            &__monthly-statistic.card {
+                background-color: #9ccc65;
             }
 
             &__count {
